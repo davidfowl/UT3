@@ -26,13 +26,13 @@ namespace UTT
 
         public Task CreateGame()
         {
-            var game = Game.CreateGame(UserName);
+            Game.CreateGame(UserName);
             return Clients.All.SendAsync("GameUpdated", Game.GetGames());
         }
 
         public Task JoinGame(int id)
         {
-            var game = Game.JoinGame(id, UserName);
+            Game.JoinGame(id, UserName);
             return Clients.All.SendAsync("GameUpdated", Game.GetGames());
         }
 
@@ -71,7 +71,7 @@ namespace UTT
         public string Player2 { get; set; }
         public string Status { get; set; }
 
-        public static Game CreateGame(string player)
+        public static void CreateGame(string player)
         {
             var id = Interlocked.Increment(ref _id);
             var game = new Game
@@ -81,17 +81,15 @@ namespace UTT
                 Status = "Waiting"
             };
             _games.TryAdd(id, game);
-            return game;
         }
 
-        public static Game JoinGame(int id, string userName)
+        public static void JoinGame(int id, string userName)
         {
             if (_games.TryGetValue(id, out var game) && game.Player2 == null)
             {
                 game.Player2 = userName;
                 game.Status = "Playing";
             }
-            return game;
         }
 
         public static IEnumerable<Game> GetGames() => _games.Values;
