@@ -4,6 +4,7 @@
 <html>
     <head>
         <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+        <script src="https://unpkg.com/vue-router/dist/vue-router.js"></script>
         <script src="/js/signalr.min.js"></script>
         <link rel="stylesheet" href="/css/site.css" />
     </head>
@@ -12,21 +13,30 @@
 
         Hello @Model.UserName
 
-        <h2>Games</h2>
-
         <div id="gameSection">
-        <ol>
-            <li v-for="game in games" :key="game.id">
-            {{ game.player1 }} ({{ game.status }}) 
-            <a href="#" v-if="game.status == 'Playing'">Watch</a> 
-            <a href="#" v-on:click="joinGame(game.id)" v-if="game.status == 'Waiting' && game.player1 != '@Model.UserName'">Join</a>
-            </li>
-        </ol>
-        <a href="#" v-on:click="startGame">Start new game</a>
+            <h2>Games</h2>
+            <ol>
+                <li v-for="game in games" :key="game.id">
+                {{ game.player1 }} ({{ game.status }}) 
+                <a href="#" v-on:click="select(game)" v-if="game.status == 'Playing'">Select</a>
+                <a href="#" v-on:click="joinGame(game.id)" v-if="game.status == 'Waiting' && game.player1 != '@Model.UserName'">Join</a>
+                </li>
+            </ol>
+            <a href="#" v-on:click="startGame">Start new game</a>
+
+            <div v-if="game">
+                <h2>Game</h2>
+                <div id="currentGame">
+                    {{ game.id }}
+                    {{ game.player1 }}
+                    {{ game.player2 }}
+                    are playing
+                </div> 
+            </div>
         </div>
 
         <h2>Lobby</h2>
-
+        
         <div id="chat-area">
             <ul id="messages">
                 <li v-for="message in messages">{{ message.from }}: {{ message.text }}</li>
@@ -43,22 +53,27 @@
             </form>
         </div>
 
-        
+
         <script>
             var connection = new signalR.HubConnectionBuilder()
                             .withUrl('/utt')
                             .configureLogging(signalR.LogLevel.Trace)
                             .build();
 
+            
             var gameSection = new Vue({
                 el: '#gameSection',
                 data: {
                     name: '@Model.UserName',
-                    games: [ ]
+                    games: [ ],
+                    game: null
                 },
                 methods: {
                     startGame: function() {
                         connection.invoke('createGame');
+                    },
+                    select: function(game) {
+                        this.game = game;
                     },
                     joinGame: function(id) {
                         connection.invoke('joinGame', id);
@@ -94,8 +109,6 @@
             });
 
             connection.start();
-
-
         </script>
     </body>
 
