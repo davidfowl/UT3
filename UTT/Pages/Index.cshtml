@@ -1,10 +1,99 @@
 @page
 @model IndexModel
 
-<h1>Ultimate Tic Tac Toe</h1>
+<html>
+    <head>
+        <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+        <script src="/js/signalr.min.js"></script>
+        <link rel="stylesheet" href="/css/site.css" />
+    </head>
+    <body>
+        <h1>Ultimate Tic Tac Toe</h1>
 
-Hello @Model.UserName
+        Hello @Model.UserName
 
-<h2>Active Games</h2>
+        <h2>Games</h2>
 
-<h2>Lobby</h2>
+        <div id="gameSection">
+        <ol>
+            <li v-for="game in games">
+            {{ game.player }} ({{ game.status }}) <a href="#" v-if="game.status == 'Playing'">Watch</a>
+            </li>
+        </ol>
+        <a href="#" v-on:click="startGame">Start new game</a>
+        </div>
+
+        <h2>Lobby</h2>
+
+        <div id="chat-area">
+            <ul id="messages">
+                <li v-for="message in messages">{{ message.from }} : {{ message.text }}</li>
+            </ul>
+            <ul id="users">
+                <li><b>Users online</b></li>
+                <li v-for="user in users">{{ user }}</li>
+            </ul>
+            <div class="clear">
+            </div>
+            <form action="#" v-on:submit.prevent="addMessage">
+                <input type="text" id="new-message" v-model="message" />
+                <input type="submit" id="send" value="Send" class="send" />
+            </form>
+        </div>
+
+        
+        <script>
+            var connection = new signalR.HubConnectionBuilder()
+                            .withUrl('/utt')
+                            .build();
+
+            var gameSection = new Vue({
+                el: '#gameSection',
+                data: {
+                    name: '@Model.UserName',
+                    games: [
+                        { id: 1, player: 'johndoe@gmail.com', status: 'Waiting' },
+                        { id: 2, player: 'foo@bar.com', status: 'Playing' }
+                    ]
+                },
+                methods: {
+                    startGame: function() {
+                        this.games.push({ id: 1, player: this.name, status: 'Waiting' });
+                    }
+                }
+            });
+
+            var lobbySection = new Vue({
+                el: '#chat-area',
+                data: {
+                    users: [],
+                    messages: [],
+                    message: ''
+                },
+                methods: {
+                    addMessage: function() {
+                        connection.invoke('sendToLobby', this.message);
+                        this.message = '';
+                    }
+                }
+            });
+
+            connection.on('userJoined', function(user) {
+                lobbySection.users.push(user);
+            });
+
+            connection.on('userLeft', function(user) {
+                lobbySection.users.push(user);
+            });
+            
+            connection.on('lobbyMessage', function(from, message) {
+                lobbySection.messages.push({ from: from, text: message });
+            });
+
+            connection.start();
+
+
+        </script>
+    </body>
+
+</html>

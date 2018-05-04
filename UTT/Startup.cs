@@ -41,7 +41,7 @@ namespace UTT
 
             app.UseSignalR(routes =>
             {
-                routes.MapHub<Chat>("/hubs/chat");
+                routes.MapHub<UTTHub>("/utt");
             });
         }
     }
