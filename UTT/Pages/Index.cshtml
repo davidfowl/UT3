@@ -16,8 +16,10 @@
 
         <div id="gameSection">
         <ol>
-            <li v-for="game in games">
-            {{ game.player }} ({{ game.status }}) <a href="#" v-if="game.status == 'Playing'">Watch</a>
+            <li v-for="game in games" :key="game.id">
+            {{ game.player1 }} ({{ game.status }}) 
+            <a href="#" v-if="game.status == 'Playing'">Watch</a> 
+            <a href="#" v-on:click="joinGame(game.id)" v-if="game.status == 'Waiting' && game.player1 != '@Model.UserName'">Join</a>
             </li>
         </ol>
         <a href="#" v-on:click="startGame">Start new game</a>
@@ -51,14 +53,14 @@
                 el: '#gameSection',
                 data: {
                     name: '@Model.UserName',
-                    games: [
-                        { id: 1, player: 'johndoe@gmail.com', status: 'Waiting' },
-                        { id: 2, player: 'foo@bar.com', status: 'Playing' }
-                    ]
+                    games: [ ]
                 },
                 methods: {
                     startGame: function() {
-                        this.games.push({ id: 1, player: this.name, status: 'Waiting' });
+                        connection.invoke('createGame');
+                    },
+                    joinGame: function(id) {
+                        connection.invoke('joinGame', id);
                     }
                 }
             });
@@ -78,16 +80,16 @@
                 }
             });
 
-            connection.on('userJoined', function(user) {
-                lobbySection.users.push(user);
+            connection.on('userChanged', function(users) {
+                lobbySection.users = users;
             });
 
-            connection.on('userLeft', function(user) {
-                lobbySection.users.push(user);
-            });
-            
             connection.on('lobbyMessage', function(from, message) {
                 lobbySection.messages.push({ from: from, text: message });
+            });
+
+            connection.on('gameUpdated', function(games) {
+                gameSection.games = games;
             });
 
             connection.start();
