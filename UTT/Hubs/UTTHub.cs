@@ -11,10 +11,12 @@ namespace UTT
     {
         public string UserName => Context.User.Identity.Name;
 
-        public override Task OnConnectedAsync()
+        public override async Task OnConnectedAsync()
         {
-            Clients.All.SendAsync("GameUpdated", Game.GetGames());
-            return Clients.All.SendAsync("UserJoined", UserName);
+            User.AddUser(UserName);
+
+            await Clients.All.SendAsync("GameUpdated", Game.GetGames());
+            await Clients.All.SendAsync("UsersChanged", User.GetUsers());
         }
 
         public Task SendToLobby(string message)
@@ -36,10 +38,28 @@ namespace UTT
 
         public override Task OnDisconnectedAsync(Exception exception)
         {
-            return Clients.All.SendAsync("UserLeft", UserName);
+            User.Remove(UserName);
+
+            return Clients.All.SendAsync("UsersChanged", User.GetUsers());
         }
     }
 
+    public class User
+    {
+        private static ConcurrentDictionary<string, string> _users = new ConcurrentDictionary<string, string>();
+
+        public static void AddUser(string user)
+        {
+            _users.TryAdd(user, user);
+        }
+
+        public static void Remove(string user)
+        {
+            _users.TryRemove(user, out _);
+        }
+
+        public static IEnumerable<string> GetUsers() => _users.Values;
+    }
 
     public class Game
     {
@@ -54,7 +74,12 @@ namespace UTT
         public static Game CreateGame(string player)
         {
             var id = Interlocked.Increment(ref _id);
-            var game = new Game { Id = id, Player1 = player, Status = "Waiting" };
+            var game = new Game
+            {
+                Id = id,
+                Player1 = player,
+                Status = "Waiting"
+            };
             _games.TryAdd(id, game);
             return game;
         }
