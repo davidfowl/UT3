@@ -1,20 +1,12 @@
 using System;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SignalR;
 
 namespace UTT
 {
     public class UTTHub : Hub
     {
-        private readonly UserManager<IdentityUser> _userManager;
-
-        public UTTHub(UserManager<IdentityUser> userManager)
-        {
-            _userManager = userManager;
-        }
-
-        public string UserName => _userManager.GetUserName(Context.User);
+        public string UserName => Context.User.Identity.Name;
 
         public override Task OnConnectedAsync()
         {

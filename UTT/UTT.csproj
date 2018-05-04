@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
     <RuntimeFrameworkVersion>2.1.0-rc1-26425-06</RuntimeFrameworkVersion>
+    <UserSecretsId>UTT</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
@@ -12,11 +13,15 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore" Version="2.1.0-rc1-30677" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.1.0-rc1-30677" />
-    <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="2.1.0-rc1-30677" />
-    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="2.1.0-rc1-30677" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.Cookies" Version="2.1.0-rc1-30677" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.Twitter" Version="2.1.0-rc1-30677" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="2.1.0-rc1-30677" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR" Version="1.0.0-rc1-30677" />
     <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="2.1.0-rc1-30677" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <DotNetCliToolReference Include="Microsoft.Extensions.SecretManager.Tools" Version="2.0.0" />
   </ItemGroup>
 
 </Project>
