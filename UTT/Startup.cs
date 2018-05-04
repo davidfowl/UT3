@@ -5,6 +5,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace UTT
@@ -15,6 +18,12 @@ namespace UTT
         {
             services.AddMvc();            
             services.AddSignalR();
+
+            services.AddDbContext<IdentityDbContext>(
+                options => options.UseInMemoryDatabase("MyDatabase"));
+
+            services.AddDefaultIdentity<IdentityUser>()
+                    .AddEntityFrameworkStores<IdentityDbContext>();
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
@@ -25,6 +34,8 @@ namespace UTT
             }
 
             app.UseStaticFiles();
+
+            app.UseAuthentication();
 
             app.UseMvc();
 
