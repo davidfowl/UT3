@@ -1,0 +1,7 @@
+{
+    "name": "utt",
+    "private": true,
+    "dependencies": {
+        "@aspnet/signalr": "1.0.0-rc1-30677"
+    }
+}
