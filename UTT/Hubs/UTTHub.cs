@@ -88,10 +88,17 @@ namespace UTT
 
         public bool Play(string player, int outerRowIndex, int outerColIndex, int innerRowIndex, int innerColIndex, out int value, out string playerTurn)
         {
-            value = GetPlayerValue(player);
-
             ref var cell = ref Board.Boards[outerRowIndex][outerColIndex].Cells[innerRowIndex][innerColIndex];
             playerTurn = null;
+            value = 0;
+
+            if (cell != 0)
+            {
+                // Can't play over an existing cell
+                return false;
+            }
+
+            value = GetPlayerValue(player);
 
             switch (value)
             {
@@ -114,11 +121,13 @@ namespace UTT
         {
             if (player != Player1 && player != Player2)
             {
+                // Spectators can't play
                 return 0;
             }
 
             if (player != PlayerTurn)
             {
+                // Not the correct player's turn
                 return 0;
             }
 

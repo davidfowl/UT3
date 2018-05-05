@@ -43,10 +43,11 @@
                 connection.invoke('joinGame', id);
             },
             playCell: function (outerRowIndex, outerColIndex, innerRowIndex, innerColIndex) {
-                // Only send to the server if it's this player's turn
-                if (this.game.playerTurn == this.name) {
+                // Only send to the server if it's this player's turn and there's nothing in this slot
+                var cell = this.game.board.boards[outerRowIndex][outerColIndex].cells[innerRowIndex][innerColIndex];
+                if (this.game.playerTurn == this.name && cell === 0) {
                     connection.invoke('playTurn', this.game.id, outerRowIndex, outerColIndex, innerRowIndex, innerColIndex);
-                }    
+                }
             }
         }
     });
@@ -68,7 +69,7 @@
             if (game.status == 1) {
                 app.selectGame(game);
                 break;
-            }    
+            }
         }
     });
 
