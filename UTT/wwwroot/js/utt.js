@@ -43,11 +43,27 @@
                 connection.invoke('joinGame', id);
             },
             playCell: function (outerRowIndex, outerColIndex, innerRowIndex, innerColIndex) {
-                // Only send to the server if it's this player's turn and there's nothing in this slot
-                var cell = this.game.board.boards[outerRowIndex][outerColIndex].cells[innerRowIndex][innerColIndex];
-                if (this.game.playerTurn == this.name && cell === 0) {
-                    connection.invoke('playTurn', this.game.id, outerRowIndex, outerColIndex, innerRowIndex, innerColIndex);
+                if (this.game.playerTurn !== this.name) {
+                    // Not this player's turn
+                    return;
                 }
+
+                var board = this.game.board.boards[outerRowIndex][outerColIndex];
+                var nextPos = this.game.nextBoardPosition;
+                var expectedBoard = nextPos.row === -1 ? null : this.game.board.boards[nextPos.row][nextPos.column];
+
+                if (expectedBoard != null && expectedBoard != board) {
+                    // Played in the wrong board
+                    return;
+                }
+
+                // Only send to the server if it's this player's turn and there's nothing in this slot
+                var cell = board.cells[innerRowIndex][innerColIndex];
+                if (cell !== 0) {
+                    // Spot taken
+                    return;
+                }
+                connection.invoke('playTurn', this.game.id, outerRowIndex, outerColIndex, innerRowIndex, innerColIndex);
             }
         }
     });
