@@ -6,22 +6,23 @@ var connection = new signalR.HubConnectionBuilder()
 var app = new Vue({
     el: '#app',
     data: {
+        name: '',
         games: [],
         game: null,
         game2: {
             board: {
                 cells: [
-                    [[[0, 1, 2], [0, 1, 0], [2, 0, 0]],
-                    [[0, 1, 2], [0, 1, 0], [2, 0, 0]],
-                    [[0, 1, 2], [0, 1, 0], [2, 0, 0]]],
+                    [[[0, 0, 0], [0, 0, 0], [0, 0, 0]],
+                    [[0, 0, 0], [0, 0, 0], [0, 0, 0]],
+                    [[0, 0, 0], [0, 0, 0], [0, 0, 0]]],
 
-                    [[[0, 1, 2], [0, 1, 0], [2, 0, 0]],
-                    [[0, 1, 2], [0, 1, 0], [2, 0, 0]],
-                    [[0, 1, 2], [0, 1, 0], [2, 0, 0]]],
+                    [[[0, 0, 0], [0, 0, 0], [0, 0, 0]],
+                    [[0, 0, 0], [0, 0, 0], [0, 0, 0]],
+                    [[0, 0, 0], [0, 0, 0], [0, 0, 0]]],
 
-                    [[[0, 1, 2], [0, 1, 0], [2, 0, 0]],
-                    [[0, 1, 2], [0, 1, 0], [2, 0, 0]],
-                    [[0, 1, 2], [0, 1, 0], [2, 0, 0]]]
+                    [[[0, 0, 0], [0, 0, 0], [0, 0, 0]],
+                    [[0, 0, 0], [0, 0, 0], [0, 0, 0]],
+                    [[0, 0, 0], [0, 0, 0], [0, 0, 0]]]
                 ]
             }
         },
@@ -51,9 +52,8 @@ var app = new Vue({
                 this.newGame = '';
             }
         },
-        select: function (game) {
+        selectGame: function (game) {
             this.game = game;
-            connection.invoke('selectGame', game.id);
         },
         joinGame: function (id) {
             connection.invoke('joinGame', id);
@@ -75,6 +75,11 @@ connection.on('lobbyMessage', function (from, message) {
 
 connection.on('gameUpdated', function (games) {
     app.games = games;
+
+    if (games.length > 0) {
+        // Temporary to select a game
+        app.selectGame(games[0]);
+    }    
 });
 
 connection.start();

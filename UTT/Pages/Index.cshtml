@@ -14,13 +14,13 @@
     <div id="app">
         <h1>Ultimate Tic Tac Toe</h1>
 
-        Hello @Model.UserName 
+        Hello @Model.UserName
 
         <h2>Games</h2>
         <ol>
             <li v-for="game in games">
                 {{ game.name }} ({{ getStatus(game) }})
-                <a href="#" v-on:click="select(game)" v-if="game.status == 1">Select</a>
+                <a href="#" v-on:click="selectGame(game)" v-if="game.status == 1">Select</a>
                 <a href="#" v-on:click="joinGame(game.id)" v-if="game.status == 0 && game.player1 != '@Model.UserName'">Join</a>
             </li>
         </ol>
@@ -31,28 +31,26 @@
         </form>
 
         <div v-if="game">
-            <h2>Game</h2>
-            <div id="currentGame">
-                <table border="1">
-                    <tbody>
-                        <tr v-for="(row, outerRowIndex) in game2.board.cells">
-                            <td v-for="(game, outerColIndex) in row">
-                                <table border="1">
-                                    <tbody>
-                                        <tr v-for="(gameRow, innerRowIndex) in game">
-                                            <td v-for="(cell, innerColIndex) in gameRow" v-on:click="playCell(outerRowIndex, outerColIndex, innerRowIndex, innerColIndex)">
-                                                <div v-if="cell == '0'">-</div>
-                                                <div v-if="cell == '1'">1</div>
-                                                <div v-if="cell == '2'">2</div>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+            <h2>Game {{ game.name }}</h2>
+            <table border="1">
+                <tbody>
+                    <tr v-for="(row, outerRowIndex) in game2.board.cells">
+                        <td v-for="(game, outerColIndex) in row">
+                            <table border="1">
+                                <tbody>
+                                    <tr v-for="(gameRow, innerRowIndex) in game">
+                                        <td v-for="(cell, innerColIndex) in gameRow" v-on:click="playCell(outerRowIndex, outerColIndex, innerRowIndex, innerColIndex)">
+                                            <div v-if="cell == '0'">-</div>
+                                            <div v-if="cell == '1'">1</div>
+                                            <div v-if="cell == '2'">2</div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
 
         <h2>Chat</h2>
