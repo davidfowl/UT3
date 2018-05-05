@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
+using Newtonsoft.Json;
 
 namespace UTT
 {
@@ -83,18 +84,28 @@ namespace UTT
         public GameStatus Status { get; set; }
         public string Name { get; set; }
         public string PlayerTurn { get; set; }
-
         public OuterBoard Board { get; set; }
+
+        // This only works with JSON (we should be using proper view models)
+        [JsonIgnore]
+        public InnerBoard NextBoard { get; set; }
 
         public bool Play(string player, int outerRowIndex, int outerColIndex, int innerRowIndex, int innerColIndex, out int value, out string playerTurn)
         {
-            ref var cell = ref Board.Boards[outerRowIndex][outerColIndex].Cells[innerRowIndex][innerColIndex];
+            var board = Board.Boards[outerRowIndex][outerColIndex];
+            ref var cell = ref board.Cells[innerRowIndex][innerColIndex];
             playerTurn = null;
             value = 0;
 
             if (cell != 0)
             {
                 // Can't play over an existing cell
+                return false;
+            }
+
+            if (NextBoard != null && board != NextBoard)
+            {
+                // Invalid move, the next player has to play in the specific board
                 return false;
             }
 
@@ -112,6 +123,7 @@ namespace UTT
                     break;
             }
 
+            NextBoard = Board.Boards[innerRowIndex][innerColIndex];
             PlayerTurn = playerTurn;
             cell = value;
             return true;
