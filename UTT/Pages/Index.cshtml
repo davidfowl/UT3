@@ -11,11 +11,12 @@
 </head>
 
 <body>
-    <h1>Ultimate Tic Tac Toe</h1>
+    <div id="app">
+        <h1>Ultimate Tic Tac Toe</h1>
 
-    Hello @Model.UserName
+        Hello @Model.UserName
 
-    <div id="gameSection">
+
         <h2>Games</h2>
         <ol>
             <li v-for="game in games" :key="game.id">
@@ -50,26 +51,26 @@
                 </table>
             </div>
         </div>
-    </div>
 
-    <h2>Lobby</h2>
+        <h2>Lobby</h2>
 
-    <div id="chat-area">
-        <ul id="messages">
-            <li v-for="message in messages">{{ message.from }}: {{ message.text }}</li>
-        </ul>
-        <ul id="users">
-            <li>
-                <b>Users online</b>
-            </li>
-            <li v-for="user in users">{{ user }}</li>
-        </ul>
-        <div class="clear">
+        <div id="chat-area">
+            <ul id="messages">
+                <li v-for="message in messages">{{ message.from }}: {{ message.text }}</li>
+            </ul>
+            <ul id="users">
+                <li>
+                    <b>Users online</b>
+                </li>
+                <li v-for="user in users">{{ user }}</li>
+            </ul>
+            <div class="clear">
+            </div>
+            <form action="#" v-on:submit.prevent="addLobbyMessage">
+                <input type="text" id="new-message" v-model="message" />
+                <input type="submit" id="send" value="Send" class="send" />
+            </form>
         </div>
-        <form action="#" v-on:submit.prevent="addMessage">
-            <input type="text" id="new-message" v-model="message" />
-            <input type="submit" id="send" value="Send" class="send" />
-        </form>
     </div>
 
 
@@ -79,9 +80,8 @@
             .configureLogging(signalR.LogLevel.Trace)
             .build();
 
-
-        var gameSection = new Vue({
-            el: '#gameSection',
+        var app = new Vue({
+            el: '#app',
             data: {
                 name: '@Model.UserName',
                 games: [],
@@ -102,9 +102,16 @@
                             [[0, 1, 2], [0, 1, 0], [2, 0, 0]]]
                         ]
                     }
-                }
+                },
+                users: [],
+                messages: [],
+                message: ''
             },
             methods: {
+                addLobbyMessage: function () {
+                    connection.invoke('sendToLobby', this.message);
+                    this.message = '';
+                },
                 startGame: function () {
                     connection.invoke('createGame');
                 },
@@ -122,31 +129,16 @@
             }
         });
 
-        var lobbySection = new Vue({
-            el: '#chat-area',
-            data: {
-                users: [],
-                messages: [],
-                message: ''
-            },
-            methods: {
-                addMessage: function () {
-                    connection.invoke('sendToLobby', this.message);
-                    this.message = '';
-                }
-            }
-        });
-
         connection.on('usersChanged', function (users) {
-            lobbySection.users = users;
+            app.users = users;
         });
 
         connection.on('lobbyMessage', function (from, message) {
-            lobbySection.messages.push({ from: from, text: message });
+            app.messages.push({ from: from, text: message });
         });
 
         connection.on('gameUpdated', function (games) {
-            gameSection.games = games;
+            app.games = games;
         });
 
         connection.start();
