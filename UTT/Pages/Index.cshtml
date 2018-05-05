@@ -14,12 +14,11 @@
     <div id="app">
         <h1>Ultimate Tic Tac Toe</h1>
 
-        Hello @Model.UserName
-
+        Hello @Model.UserName 
 
         <h2>Games</h2>
         <ol>
-            <li v-for="game in games" :key="game.id">
+            <li v-for="game in games">
                 {{ game.player1 }} ({{ game.status }})
                 <a href="#" v-on:click="select(game)" v-if="game.status == 1">Select</a>
                 <a href="#" v-on:click="joinGame(game.id)" v-if="game.status == 0 && game.player1 != '@Model.UserName'">Join</a>
@@ -52,7 +51,7 @@
             </div>
         </div>
 
-        <h2>Lobby</h2>
+        <h2>Chat</h2>
 
         <div id="chat-area">
             <ul id="messages">
@@ -66,7 +65,7 @@
             </ul>
             <div class="clear">
             </div>
-            <form action="#" v-on:submit.prevent="addLobbyMessage">
+            <form action="#" v-on:submit.prevent="addChatMessage">
                 <input type="text" id="new-message" v-model="message" />
                 <input type="submit" id="send" value="Send" class="send" />
             </form>
@@ -108,7 +107,7 @@
                 message: ''
             },
             methods: {
-                addLobbyMessage: function () {
+                addChatMessage: function () {
                     connection.invoke('sendToLobby', this.message);
                     this.message = '';
                 },

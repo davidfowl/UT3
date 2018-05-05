@@ -28,16 +28,17 @@ namespace UTT
             services.AddDbContext<ApplicationDbContext>(
                 options => options.UseInMemoryDatabase("MyDatabase"));
 
-            services.AddAuthentication(o =>
-                    {
-                        o.DefaultScheme = "Cookies";
-                        o.DefaultChallengeScheme = "Twitter";
-                    })
+            services.AddAuthentication("Cookies")
                     .AddCookie()
                     .AddTwitter(o =>
                     {
                         o.ConsumerKey = Configuration["twitter:consumerKey"];
                         o.ConsumerSecret = Configuration["twitter:consumerSecret"];
+                    })
+                    .AddGoogle(o =>
+                    {
+                        o.ClientId = Configuration["google:clientId"];
+                        o.ClientSecret = Configuration["google:clientSecret"];
                     });
         }
 
