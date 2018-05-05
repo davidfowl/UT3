@@ -16,13 +16,13 @@
         Hello @Model.UserName
 
         <h2>Games</h2>
-        <ol>
+        <ul>
             <li v-for="game in games">
                 {{ game.name }} ({{ getStatus(game) }})
                 <a href="#" v-on:click="selectGame(game)" v-if="game.status == 1">Select</a>
                 <a href="#" v-on:click="joinGame(game.id)" v-if="game.status == 0 && game.player1 != name">Join</a>
             </li>
-        </ol>
+        </ul>
         
         <form action="#" v-on:submit.prevent="startGame">
             <input type="text" v-model="newGame" />
@@ -62,7 +62,7 @@
                 <li>
                     <b>Users online</b>
                 </li>
-                <li v-for="user in users">{{ user }}</li>
+                <li v-for="user in users">{{ user.name }}</li>
             </ul>
             <div class="clear">
             </div>
