@@ -19,7 +19,7 @@
         <ul>
             <li v-for="game in games">
                 {{ game.name }} ({{ getStatus(game) }})
-                <a href="#" v-on:click="selectGame(game)" v-if="game.status == 1">Select</a>
+                <a href="#" v-on:click="selectGame(game)" v-if="game.status != 0">Select</a>
                 <a href="#" v-on:click="joinGame(game.id)" v-if="game.status == 0 && game.player1 != name">Join</a>
             </li>
         </ul>
@@ -29,8 +29,9 @@
             <input type="submit" id="send" value="Start new game" class="send" />
         </form>
 
-        <div v-if="game && game.status == 1">
-            <h2>Game {{ game.name }} ({{ game.playerTurn }}'s Turn)</h2>
+        <div v-if="game && game.status != 0">
+            <h2>Game {{ game.name }} <span v-if="game.status !== 2">({{ game.playerTurn }}'s Turn)</span></h2>
+            <h2 v-if="game.board.winner">{{ game.board.winner }} Won!</h2>
             <table border="1" class="board">
                 <tbody>
                     <tr v-for="(row, outerRowIndex) in game.board.boards">

@@ -91,13 +91,28 @@
         }
     });
 
-    connection.on('playMove', function (id, outerRowIndex, outerColIndex, innerRowIndex, innerColIndex, value, playerTurn, nextBoardPosition) {
+    connection.on('playMove', function (id, nextMove) {
         for (var i = 0; i < app.games.length; ++i) {
             var game = app.games[i];
             if (game.id == id) {
-                game.playerTurn = playerTurn;
-                game.nextBoardPosition = nextBoardPosition;
-                Vue.set(game.board.boards[outerRowIndex][outerColIndex].cells[innerRowIndex], innerColIndex, value);
+                game.playerTurn = nextMove.playerTurn;
+                game.nextBoardPosition = nextMove.nextBoardPosition;
+                var outerRowIndex = nextMove.outerRowIndex;
+                var outerColIndex = nextMove.outerColIndex;
+                var innerRowIndex = nextMove.innerRowIndex;
+                var innerColIndex = nextMove.innerColIndex;
+                var value = nextMove.cellValue;
+
+                var board = game.board.boards[outerRowIndex][outerColIndex];
+                board.winner = nextMove.boardWinner;
+                game.winner = nextMove.winner;
+
+                if (game.winner) {
+                    // Game over
+                    game.status = 2;
+                }
+
+                Vue.set(board.cells[innerRowIndex], innerColIndex, value);
                 break;
             }
         }
