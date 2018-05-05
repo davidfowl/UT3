@@ -36,6 +36,15 @@ namespace UTT
             return Clients.All.SendAsync("GameUpdated", Game.GetGames());
         }
 
+        public Task PlayTurn(int id, int outerRowIndex, int outerColIndex, int innerRowIndex, int innerColIndex)
+        {
+            if (Game.PlayTurn(UserName, id, outerRowIndex, outerColIndex, innerRowIndex, innerColIndex, out int value))
+            {
+                return Clients.All.SendAsync("PlayMove", id, outerRowIndex, outerColIndex, innerRowIndex, innerColIndex, value);
+            }
+            return Task.CompletedTask;
+        }
+
         public override Task OnDisconnectedAsync(Exception exception)
         {
             // TODO: Handle stopping games that include this user
@@ -74,6 +83,41 @@ namespace UTT
         public GameStatus Status { get; set; }
         public string Name { get; set; }
 
+        public OuterBoard Board { get; set; }
+
+        public bool Play(string player, int outerRowIndex, int outerColIndex, int innerRowIndex, int innerColIndex, out int value)
+        {
+            value = GetPlayerValue(player);
+            if (value == -1)
+            {
+                return false;
+            }
+
+            Board.Boards[outerRowIndex][outerColIndex].Cells[innerRowIndex][innerColIndex] = value;
+            return true;
+        }
+
+        private int GetPlayerValue(string player)
+        {
+            if (player != Player1 && player != Player2)
+            {
+                return -1;
+            }
+
+            return player == Player1 ? 1 : 2;
+        }
+
+        public static bool PlayTurn(string player, int id, int outerRowIndex, int outerColIndex, int innerRowIndex, int innerColIndex, out int value)
+        {
+            value = -1;
+            if (!_games.TryGetValue(id, out var game))
+            {
+                return false;
+            }
+
+            return game.Play(player, outerRowIndex, outerColIndex, innerRowIndex, innerColIndex, out value);
+        }
+
         public static void CreateGame(string player, string name)
         {
             var id = Interlocked.Increment(ref _id);
@@ -82,8 +126,10 @@ namespace UTT
                 Id = id,
                 Player1 = player,
                 Name = name,
-                Status = GameStatus.Waiting
+                Status = GameStatus.Waiting,
+                Board = new OuterBoard()
             };
+
             _games.TryAdd(id, game);
         }
 
@@ -97,6 +143,39 @@ namespace UTT
         }
 
         public static IEnumerable<Game> GetGames() => _games.Values;
+    }
+
+    public class OuterBoard
+    {
+        // 3x3 inner board
+        public InnerBoard[][] Boards { get; set; }
+
+        public OuterBoard()
+        {
+            Boards = new InnerBoard[3][];
+            for (var i = 0; i < 3; ++i)
+            {
+                Boards[i] = new InnerBoard[3];
+                for (var j = 0; j < 3; ++j)
+                {
+                    Boards[i][j] = new InnerBoard();
+                }
+            }
+        }
+    }
+
+    public class InnerBoard
+    {
+        // 3x3 tic tac toe board
+        public int[][] Cells { get; set; }
+        public InnerBoard()
+        {
+            Cells = new int[3][];
+            for (var i = 0; i < 3; ++i)
+            {
+                Cells[i] = new int[3];
+            }
+        }
     }
 
     public enum GameStatus

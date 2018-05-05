@@ -34,11 +34,11 @@
             <h2>Game {{ game.name }}</h2>
             <table border="1">
                 <tbody>
-                    <tr v-for="(row, outerRowIndex) in game2.board.cells">
+                    <tr v-for="(row, outerRowIndex) in game.board.boards">
                         <td v-for="(game, outerColIndex) in row">
                             <table border="1">
                                 <tbody>
-                                    <tr v-for="(gameRow, innerRowIndex) in game">
+                                    <tr v-for="(gameRow, innerRowIndex) in game.cells">
                                         <td v-for="(cell, innerColIndex) in gameRow" v-on:click="playCell(outerRowIndex, outerColIndex, innerRowIndex, innerColIndex)">
                                             <div v-if="cell == '0'">-</div>
                                             <div v-if="cell == '1'">1</div>

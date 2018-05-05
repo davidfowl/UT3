@@ -9,23 +9,6 @@ var app = new Vue({
         name: '',
         games: [],
         game: null,
-        game2: {
-            board: {
-                cells: [
-                    [[[0, 0, 0], [0, 0, 0], [0, 0, 0]],
-                    [[0, 0, 0], [0, 0, 0], [0, 0, 0]],
-                    [[0, 0, 0], [0, 0, 0], [0, 0, 0]]],
-
-                    [[[0, 0, 0], [0, 0, 0], [0, 0, 0]],
-                    [[0, 0, 0], [0, 0, 0], [0, 0, 0]],
-                    [[0, 0, 0], [0, 0, 0], [0, 0, 0]]],
-
-                    [[[0, 0, 0], [0, 0, 0], [0, 0, 0]],
-                    [[0, 0, 0], [0, 0, 0], [0, 0, 0]],
-                    [[0, 0, 0], [0, 0, 0], [0, 0, 0]]]
-                ]
-            }
-        },
         newGame: '',
         users: [],
         messages: [],
@@ -60,7 +43,6 @@ var app = new Vue({
         },
         playCell: function (outerRowIndex, outerColIndex, innerRowIndex, innerColIndex) {
             connection.invoke('playTurn', this.game.id, outerRowIndex, outerColIndex, innerRowIndex, innerColIndex);
-            // Vue.set(gameRow, index, val == 0 ? 1 : (val == 1 ? 2 : 1));
         }
     }
 });
@@ -81,5 +63,13 @@ connection.on('gameUpdated', function (games) {
         app.selectGame(games[0]);
     }    
 });
+
+connection.on('playMove', function (id, outerRowIndex, outerColIndex, innerRowIndex, innerColIndex, value) {
+    // TODO: Support multiple games in parallel
+    if (app.game && app.game.id == id)
+    {
+        Vue.set(app.game.board.boards[outerRowIndex][outerColIndex].cells[innerRowIndex], innerColIndex, value);
+    }    
+});    
 
 connection.start();
