@@ -24,9 +24,9 @@ namespace UTT
             return Clients.All.SendAsync("LobbyMessage", UserName, message);
         }
 
-        public Task CreateGame()
+        public Task CreateGame(string name)
         {
-            Game.CreateGame(UserName);
+            Game.CreateGame(UserName, name);
             return Clients.All.SendAsync("GameUpdated", Game.GetGames());
         }
 
@@ -72,14 +72,16 @@ namespace UTT
         public string Player1 { get; set; }
         public string Player2 { get; set; }
         public GameStatus Status { get; set; }
+        public string Name { get; set; }
 
-        public static void CreateGame(string player)
+        public static void CreateGame(string player, string name)
         {
             var id = Interlocked.Increment(ref _id);
             var game = new Game
             {
                 Id = id,
                 Player1 = player,
+                Name = name,
                 Status = GameStatus.Waiting
             };
             _games.TryAdd(id, game);
