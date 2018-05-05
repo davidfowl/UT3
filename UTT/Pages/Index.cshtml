@@ -35,7 +35,7 @@
                                 <table border="1">
                                     <tbody>
                                         <tr v-for="gameRow in game">
-                                            <td v-for="cell in gameRow" v-on:click="playCell(row, game, gameRow)">
+                                            <td v-for="(cell, index) in gameRow" v-on:click="playCell(gameRow, index)">
                                                 <div v-if="cell == '0'">-</div>
                                                 <div v-if="cell == '1'">1</div>
                                                 <div v-if="cell == '2'">2</div>
@@ -112,8 +112,9 @@
                     joinGame: function(id) {
                         connection.invoke('joinGame', id);
                     },
-                    playCell: function(row, game, gameRow) {
-                        Vue.set(this.game2.board.cells[0][0][0], 0, 1);
+                    playCell: function(gameRow, index) {
+                        const val = gameRow[index];
+                        Vue.set(gameRow, index, val == 0 ? 1 : (val == 1 ? 2 : 1));
                         console.log(`played: ${row}, ${game}, ${gameRow}`);
                     },
                     mapCell: function(cellId) {
