@@ -61,15 +61,16 @@ connection.on('gameUpdated', function (games) {
     if (games.length > 0) {
         // Temporary to select a game
         app.selectGame(games[0]);
-    }    
+    }
 });
 
 connection.on('playMove', function (id, outerRowIndex, outerColIndex, innerRowIndex, innerColIndex, value) {
-    // TODO: Support multiple games in parallel
-    if (app.game && app.game.id == id)
-    {
-        Vue.set(app.game.board.boards[outerRowIndex][outerColIndex].cells[innerRowIndex], innerColIndex, value);
-    }    
-});    
+    for (var i = 0; i < app.games.length; ++i) {
+        if (app.games[i].id == id) {
+            Vue.set(app.games[i].board.boards[outerRowIndex][outerColIndex].cells[innerRowIndex], innerColIndex, value);
+            break;
+        }
+    }
+});
 
 connection.start();
