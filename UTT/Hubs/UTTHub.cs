@@ -38,9 +38,9 @@ namespace UTT
 
         public Task PlayTurn(int id, int outerRowIndex, int outerColIndex, int innerRowIndex, int innerColIndex)
         {
-            if (Game.PlayTurn(UserName, id, outerRowIndex, outerColIndex, innerRowIndex, innerColIndex, out int value))
+            if (Game.PlayTurn(UserName, id, outerRowIndex, outerColIndex, innerRowIndex, innerColIndex, out int value, out var playerTurn))
             {
-                return Clients.All.SendAsync("PlayMove", id, outerRowIndex, outerColIndex, innerRowIndex, innerColIndex, value);
+                return Clients.All.SendAsync("PlayMove", id, outerRowIndex, outerColIndex, innerRowIndex, innerColIndex, value, playerTurn);
             }
             return Task.CompletedTask;
         }
@@ -82,18 +82,31 @@ namespace UTT
         public string Player2 { get; set; }
         public GameStatus Status { get; set; }
         public string Name { get; set; }
+        public string PlayerTurn { get; set; }
 
         public OuterBoard Board { get; set; }
 
-        public bool Play(string player, int outerRowIndex, int outerColIndex, int innerRowIndex, int innerColIndex, out int value)
+        public bool Play(string player, int outerRowIndex, int outerColIndex, int innerRowIndex, int innerColIndex, out int value, out string playerTurn)
         {
             value = GetPlayerValue(player);
-            if (value == -1)
+
+            ref var cell = ref Board.Boards[outerRowIndex][outerColIndex].Cells[innerRowIndex][innerColIndex];
+            playerTurn = null;
+
+            switch (value)
             {
-                return false;
+                case 0:
+                    return false;
+                case 1:
+                    playerTurn = Player2;
+                    break;
+                case 2:
+                    playerTurn = Player1;
+                    break;
             }
 
-            Board.Boards[outerRowIndex][outerColIndex].Cells[innerRowIndex][innerColIndex] = value;
+            PlayerTurn = playerTurn;
+            cell = value;
             return true;
         }
 
@@ -101,21 +114,27 @@ namespace UTT
         {
             if (player != Player1 && player != Player2)
             {
-                return -1;
+                return 0;
+            }
+
+            if (player != PlayerTurn)
+            {
+                return 0;
             }
 
             return player == Player1 ? 1 : 2;
         }
 
-        public static bool PlayTurn(string player, int id, int outerRowIndex, int outerColIndex, int innerRowIndex, int innerColIndex, out int value)
+        public static bool PlayTurn(string player, int id, int outerRowIndex, int outerColIndex, int innerRowIndex, int innerColIndex, out int value, out string playerTurn)
         {
             value = -1;
+            playerTurn = null;
             if (!_games.TryGetValue(id, out var game))
             {
                 return false;
             }
 
-            return game.Play(player, outerRowIndex, outerColIndex, innerRowIndex, innerColIndex, out value);
+            return game.Play(player, outerRowIndex, outerColIndex, innerRowIndex, innerColIndex, out value, out playerTurn);
         }
 
         public static void CreateGame(string player, string name)
@@ -127,6 +146,7 @@ namespace UTT
                 Player1 = player,
                 Name = name,
                 Status = GameStatus.Waiting,
+                PlayerTurn = player,
                 Board = new OuterBoard()
             };
 

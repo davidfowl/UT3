@@ -30,8 +30,8 @@
             <input type="submit" id="send" value="Start new game" class="send" />
         </form>
 
-        <div v-if="game">
-            <h2>Game {{ game.name }}</h2>
+        <div v-if="game && game.status == 1">
+            <h2>Game {{ game.name }} ({{ game.playerTurn }}'s Turn)</h2>
             <table border="1">
                 <tbody>
                     <tr v-for="(row, outerRowIndex) in game.board.boards">
@@ -73,6 +73,9 @@
             </form>
         </div>
     </div>
+    <script>
+        var userName = '@Model.UserName';
+    </script>
     <script src="/js/utt.js"></script>
 </body>
 
