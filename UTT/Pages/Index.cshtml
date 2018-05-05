@@ -21,8 +21,8 @@
         <ol>
             <li v-for="game in games" :key="game.id">
                 {{ game.player1 }} ({{ game.status }})
-                <a href="#" v-on:click="select(game)" v-if="game.status == 'Playing'">Select</a>
-                <a href="#" v-on:click="joinGame(game.id)" v-if="game.status == 'Waiting' && game.player1 != '@Model.UserName'">Join</a>
+                <a href="#" v-on:click="select(game)" v-if="game.status == 1">Select</a>
+                <a href="#" v-on:click="joinGame(game.id)" v-if="game.status == 0 && game.player1 != '@Model.UserName'">Join</a>
             </li>
         </ol>
         <a href="#" v-on:click="startGame">Start new game</a>

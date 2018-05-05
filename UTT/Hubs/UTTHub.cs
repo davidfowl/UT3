@@ -38,6 +38,8 @@ namespace UTT
 
         public override Task OnDisconnectedAsync(Exception exception)
         {
+            // TODO: Handle stopping games that include this user
+
             User.Remove(UserName);
 
             return Clients.All.SendAsync("UsersChanged", User.GetUsers());
@@ -69,7 +71,7 @@ namespace UTT
         public int Id { get; set; }
         public string Player1 { get; set; }
         public string Player2 { get; set; }
-        public string Status { get; set; }
+        public GameStatus Status { get; set; }
 
         public static void CreateGame(string player)
         {
@@ -78,7 +80,7 @@ namespace UTT
             {
                 Id = id,
                 Player1 = player,
-                Status = "Waiting"
+                Status = GameStatus.Waiting
             };
             _games.TryAdd(id, game);
         }
@@ -88,10 +90,17 @@ namespace UTT
             if (_games.TryGetValue(id, out var game) && game.Player2 == null)
             {
                 game.Player2 = userName;
-                game.Status = "Playing";
+                game.Status = GameStatus.Playing;
             }
         }
 
         public static IEnumerable<Game> GetGames() => _games.Values;
+    }
+
+    public enum GameStatus
+    {
+        Waiting,
+        Playing,
+        Completed
     }
 }
