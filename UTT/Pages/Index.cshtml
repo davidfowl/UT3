@@ -113,6 +113,7 @@
                         connection.invoke('joinGame', id);
                     },
                     playCell: function(row, game, gameRow) {
+                        Vue.set(this.game2.board.cells[0][0][0], 0, 1);
                         console.log(`played: ${row}, ${game}, ${gameRow}`);
                     },
                     mapCell: function(cellId) {
