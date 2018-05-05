@@ -1,4 +1,6 @@
 (function (name) {
+    Vue.config.devtools = true
+    
     var connection = new signalR.HubConnectionBuilder()
         .withUrl('/utt')
         .configureLogging(signalR.LogLevel.Trace)
