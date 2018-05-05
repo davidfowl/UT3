@@ -40,7 +40,7 @@
                                     <tr v-for="(gameRow, innerRowIndex) in board.cells">
                                         <td v-for="(cell, innerColIndex) in gameRow" 
                                             v-on:click="playCell(outerRowIndex, outerColIndex, innerRowIndex, innerColIndex)" 
-                                            v-bind:class="{ active: cell === 0 && game.playerTurn === name && outerRowIndex === game.nextBoardPosition.row && outerColIndex === game.nextBoardPosition.column }">
+                                            v-bind:class="{ active: cell === 0 && outerRowIndex === game.nextBoardPosition.row && outerColIndex === game.nextBoardPosition.column }">
                                             <div v-if="cell == '0'">--</div>
                                             <div v-if="cell == '1'">X</div>
                                             <div v-if="cell == '2'">O</div>

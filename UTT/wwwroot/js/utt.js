@@ -1,6 +1,6 @@
 (function (name) {
     Vue.config.devtools = true
-    
+
     var connection = new signalR.HubConnectionBuilder()
         .withUrl('/utt')
         .configureLogging(signalR.LogLevel.Trace)
@@ -91,12 +91,12 @@
         }
     });
 
-    connection.on('playMove', function (id, outerRowIndex, outerColIndex, innerRowIndex, innerColIndex, value, playerTurn) {
+    connection.on('playMove', function (id, outerRowIndex, outerColIndex, innerRowIndex, innerColIndex, value, playerTurn, nextBoardPosition) {
         for (var i = 0; i < app.games.length; ++i) {
             var game = app.games[i];
             if (game.id == id) {
                 game.playerTurn = playerTurn;
-                game.nextBoardPosition = { row: innerRowIndex, column: innerColIndex };
+                game.nextBoardPosition = nextBoardPosition;
                 Vue.set(game.board.boards[outerRowIndex][outerColIndex].cells[innerRowIndex], innerColIndex, value);
                 break;
             }

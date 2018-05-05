@@ -39,9 +39,9 @@ namespace UTT
 
         public Task PlayTurn(int id, int outerRowIndex, int outerColIndex, int innerRowIndex, int innerColIndex)
         {
-            if (Game.PlayTurn(UserName, id, outerRowIndex, outerColIndex, innerRowIndex, innerColIndex, out int value, out var playerTurn))
+            if (Game.PlayTurn(UserName, id, outerRowIndex, outerColIndex, innerRowIndex, innerColIndex, out int value, out var playerTurn, out var nextBoardPosition))
             {
-                return Clients.All.SendAsync("PlayMove", id, outerRowIndex, outerColIndex, innerRowIndex, innerColIndex, value, playerTurn);
+                return Clients.All.SendAsync("PlayMove", id, outerRowIndex, outerColIndex, innerRowIndex, innerColIndex, value, playerTurn, nextBoardPosition);
             }
             return Task.CompletedTask;
         }
@@ -92,12 +92,13 @@ namespace UTT
         public OuterBoard Board { get; set; }
         public BoardPosition NextBoardPosition { get; set; } = new BoardPosition(-1, -1);
 
-        public bool Play(string player, int outerRowIndex, int outerColIndex, int innerRowIndex, int innerColIndex, out int value, out string playerTurn)
+        public bool Play(string player, int outerRowIndex, int outerColIndex, int innerRowIndex, int innerColIndex, out int value, out string playerTurn, out BoardPosition nextBoardPosition)
         {
             var board = Board.Boards[outerRowIndex][outerColIndex];
             var expectedBoard = NextBoardPosition.IsValid ? Board.Boards[NextBoardPosition.Row][NextBoardPosition.Column] : null;
+            var cell = board.Cells[innerRowIndex][innerColIndex];
 
-            ref var cell = ref board.Cells[innerRowIndex][innerColIndex];
+            nextBoardPosition = default(BoardPosition);
             playerTurn = null;
             value = 0;
 
@@ -110,6 +111,12 @@ namespace UTT
             if (expectedBoard != null && board != expectedBoard)
             {
                 // Invalid move, the next player has to play in the specific board
+                return false;
+            }
+
+            if (board.Winner.HasValue)
+            {
+                // This board is done
                 return false;
             }
 
@@ -127,9 +134,24 @@ namespace UTT
                     break;
             }
 
-            NextBoardPosition = new BoardPosition(innerRowIndex, innerColIndex);
+            board.Play(innerRowIndex, innerColIndex, value);
+
+            // Get the next board to check it for validity
+            var nextBoard = Board.Boards[innerRowIndex][innerColIndex];
+
+            if (nextBoard.Winner.HasValue)
+            {
+                // The next board is full so the board is open again
+                nextBoardPosition = new BoardPosition(-1, -1);
+            }
+            else
+            {
+                nextBoardPosition = new BoardPosition(innerRowIndex, innerColIndex);
+            }
+
             PlayerTurn = playerTurn;
-            cell = value;
+            NextBoardPosition = nextBoardPosition;
+
             return true;
         }
 
@@ -150,16 +172,24 @@ namespace UTT
             return player == Player1 ? 1 : 2;
         }
 
-        public static bool PlayTurn(string player, int id, int outerRowIndex, int outerColIndex, int innerRowIndex, int innerColIndex, out int value, out string playerTurn)
+        public static bool PlayTurn(string player,
+                                    int id, int outerRowIndex,
+                                    int outerColIndex,
+                                    int innerRowIndex,
+                                    int innerColIndex,
+                                    out int value,
+                                    out string playerTurn,
+                                    out BoardPosition nextBoardPosition)
         {
             value = -1;
             playerTurn = null;
+            nextBoardPosition = default(BoardPosition);
             if (!_games.TryGetValue(id, out var game))
             {
                 return false;
             }
 
-            return game.Play(player, outerRowIndex, outerColIndex, innerRowIndex, innerColIndex, out value, out playerTurn);
+            return game.Play(player, outerRowIndex, outerColIndex, innerRowIndex, innerColIndex, out value, out playerTurn, out nextBoardPosition);
         }
 
         public static void CreateGame(string player, string name)
@@ -227,12 +257,53 @@ namespace UTT
     {
         // 3x3 tic tac toe board
         public int[][] Cells { get; set; }
+
+        public int? Winner { get; set; }
+
         public InnerBoard()
         {
             Cells = new int[3][];
             for (var i = 0; i < 3; ++i)
             {
                 Cells[i] = new int[3];
+            }
+        }
+
+        public void Play(int row, int column, int value)
+        {
+            Cells[row][column] = value;
+
+            for (var i = 0; i < 3; ++i)
+            {
+                // Horizontal
+                if (Cells[i][0] != 0 && Cells[i][0] == Cells[i][1] && Cells[i][1] == Cells[i][2])
+                {
+                    Winner = Cells[i][0];
+                    return;
+                }
+
+                // Vertical
+                if (Cells[0][i] != 0 && Cells[0][i] == Cells[1][i] && Cells[1][i] == Cells[2][i])
+                {
+                    Winner = Cells[0][i];
+                    return;
+                }
+            }
+
+            // 0,0    0,2
+            //    1,1
+            // 2,0    2,2
+
+            // Diagnoal
+            if (Cells[0][0] != 0 && Cells[0][0] == Cells[1][1] && Cells[1][1] == Cells[2][2])
+            {
+                Winner = Cells[0][0];
+                return;
+            }
+
+            if (Cells[0][2] != 0 && Cells[0][2] == Cells[1][1] && Cells[1][1] == Cells[2][0])
+            {
+                Winner = Cells[0][2];
             }
         }
     }
