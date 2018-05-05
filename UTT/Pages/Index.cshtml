@@ -5,7 +5,6 @@
 
 <head>
     <script src="https://cdn.jsdelivr.net/npm/vue"></script>
-    <script src="https://unpkg.com/vue-router/dist/vue-router.js"></script>
     <script src="/js/signalr.min.js"></script>
     <link rel="stylesheet" href="/css/site.css" />
 </head>
@@ -21,7 +20,7 @@
             <li v-for="game in games">
                 {{ game.name }} ({{ getStatus(game) }})
                 <a href="#" v-on:click="selectGame(game)" v-if="game.status == 1">Select</a>
-                <a href="#" v-on:click="joinGame(game.id)" v-if="game.status == 0 && game.player1 != '@Model.UserName'">Join</a>
+                <a href="#" v-on:click="joinGame(game.id)" v-if="game.status == 0 && game.player1 != name">Join</a>
             </li>
         </ol>
         
@@ -32,13 +31,13 @@
 
         <div v-if="game && game.status == 1">
             <h2>Game {{ game.name }} ({{ game.playerTurn }}'s Turn)</h2>
-            <table border="1">
+            <table border="1" class="board">
                 <tbody>
                     <tr v-for="(row, outerRowIndex) in game.board.boards">
-                        <td v-for="(game, outerColIndex) in row">
-                            <table border="1">
+                        <td v-for="(board, outerColIndex) in row">
+                            <table border="1" v-bind:class="{ active: game.playerTurn === name && outerRowIndex === game.nextBoardPosition.row && outerColIndex === game.nextBoardPosition.column }">
                                 <tbody>
-                                    <tr v-for="(gameRow, innerRowIndex) in game.cells">
+                                    <tr v-for="(gameRow, innerRowIndex) in board.cells">
                                         <td v-for="(cell, innerColIndex) in gameRow" v-on:click="playCell(outerRowIndex, outerColIndex, innerRowIndex, innerColIndex)">
                                             <div v-if="cell == '0'">-</div>
                                             <div v-if="cell == '1'">1</div>

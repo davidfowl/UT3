@@ -78,6 +78,7 @@
             var game = app.games[i];
             if (game.id == id) {
                 game.playerTurn = playerTurn;
+                game.nextBoardPosition = { row: innerRowIndex, column: innerColIndex };
                 Vue.set(game.board.boards[outerRowIndex][outerColIndex].cells[innerRowIndex], innerColIndex, value);
                 break;
             }

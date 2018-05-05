@@ -85,14 +85,13 @@ namespace UTT
         public string Name { get; set; }
         public string PlayerTurn { get; set; }
         public OuterBoard Board { get; set; }
-
-        // This only works with JSON (we should be using proper view models)
-        [JsonIgnore]
-        public InnerBoard NextBoard { get; set; }
+        public BoardPosition NextBoardPosition { get; set; } = new BoardPosition(-1, -1);
 
         public bool Play(string player, int outerRowIndex, int outerColIndex, int innerRowIndex, int innerColIndex, out int value, out string playerTurn)
         {
             var board = Board.Boards[outerRowIndex][outerColIndex];
+            var expectedBoard = NextBoardPosition.IsValid ? Board.Boards[NextBoardPosition.Row][NextBoardPosition.Column] : null;
+
             ref var cell = ref board.Cells[innerRowIndex][innerColIndex];
             playerTurn = null;
             value = 0;
@@ -103,7 +102,7 @@ namespace UTT
                 return false;
             }
 
-            if (NextBoard != null && board != NextBoard)
+            if (expectedBoard != null && board != expectedBoard)
             {
                 // Invalid move, the next player has to play in the specific board
                 return false;
@@ -123,7 +122,7 @@ namespace UTT
                     break;
             }
 
-            NextBoard = Board.Boards[innerRowIndex][innerColIndex];
+            NextBoardPosition = new BoardPosition(innerRowIndex, innerColIndex);
             PlayerTurn = playerTurn;
             cell = value;
             return true;
@@ -184,6 +183,20 @@ namespace UTT
         }
 
         public static IEnumerable<Game> GetGames() => _games.Values;
+    }
+
+    public struct BoardPosition
+    {
+        public int Column { get; }
+        public int Row { get; }
+
+        public bool IsValid => Column != -1 && Row != -1;
+
+        public BoardPosition(int row, int col)
+        {
+            Row = row;
+            Column = col;
+        }
     }
 
     public class OuterBoard

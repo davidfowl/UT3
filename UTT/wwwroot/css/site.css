@@ -67,3 +67,8 @@ body {
 {
     color:#bbb;
 }
+
+.board .active
+{
+    background-color: gold;
+}
