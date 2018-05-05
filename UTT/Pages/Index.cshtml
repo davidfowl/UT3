@@ -27,10 +27,26 @@
             <div v-if="game">
                 <h2>Game</h2>
                 <div id="currentGame">
-                    {{ game.id }}
-                    {{ game.player1 }}
-                    {{ game.player2 }}
-                    are playing
+                    
+                    <table border="1">
+                        <tbody>
+                        <tr v-for="row in game2.board.cells">
+                            <td v-for="game in row">
+                                <table border="1">
+                                    <tbody>
+                                        <tr v-for="gameRow in game">
+                                            <td v-for="cell in gameRow" v-on:click="playCell(row, game, gameRow)">
+                                                <div v-if="cell == '0'">-</div>
+                                                <div v-if="cell == '1'">1</div>
+                                                <div v-if="cell == '2'">2</div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
                 </div> 
             </div>
         </div>
@@ -66,7 +82,8 @@
                 data: {
                     name: '@Model.UserName',
                     games: [ ],
-                    game: null
+                    game: null,
+                    game2: null
                 },
                 methods: {
                     startGame: function() {
@@ -74,9 +91,32 @@
                     },
                     select: function(game) {
                         this.game = game;
+                        this.game2 = {
+                            board: {  
+                                cells: [
+                                  [[[0, 1, 2],  [0, 1, 0],  [2, 0, 0]],
+                                   [[0, 1, 2],  [0, 1, 0],  [2, 0, 0]],
+                                   [[0, 1, 2],  [0, 1, 0],  [2, 0, 0]]],
+
+                                  [[[0, 1, 2],  [0, 1, 0],  [2, 0, 0]],
+                                   [[0, 1, 2],  [0, 1, 0],  [2, 0, 0]],
+                                   [[0, 1, 2],  [0, 1, 0],  [2, 0, 0]]],
+
+                                  [[[0, 1, 2],  [0, 1, 0],  [2, 0, 0]],
+                                   [[0, 1, 2],  [0, 1, 0],  [2, 0, 0]],
+                                   [[0, 1, 2],  [0, 1, 0],  [2, 0, 0]]]
+                                ]
+                            }
+                        }
                     },
                     joinGame: function(id) {
                         connection.invoke('joinGame', id);
+                    },
+                    playCell: function(row, game, gameRow) {
+                        console.log(`played: ${row}, ${game}, ${gameRow}`);
+                    },
+                    mapCell: function(cellId) {
+                        
                     }
                 }
             });
