@@ -25,9 +25,6 @@ namespace UTT
             services.AddMvc();
             services.AddSignalR();
 
-            services.AddDbContext<ApplicationDbContext>(
-                options => options.UseInMemoryDatabase("MyDatabase"));
-
             services.AddAuthentication("Cookies")
                     .AddCookie()
                     .AddTwitter(
