@@ -30,16 +30,10 @@ namespace UTT
 
             services.AddAuthentication("Cookies")
                     .AddCookie()
-                    .AddTwitter(o =>
-                    {
-                        o.ConsumerKey = Configuration["twitter:consumerKey"];
-                        o.ConsumerSecret = Configuration["twitter:consumerSecret"];
-                    })
-                    .AddGoogle(o =>
-                    {
-                        o.ClientId = Configuration["google:clientId"];
-                        o.ClientSecret = Configuration["google:clientSecret"];
-                    });
+                    .AddTwitter(
+                        options => Configuration.GetSection("twitter").Bind(options))
+                    .AddGoogle(
+                        options => Configuration.GetSection("google").Bind(options));
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
