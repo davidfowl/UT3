@@ -72,3 +72,13 @@ body {
 {
     background-color: gold;
 }
+
+.board .player1
+{
+    background-color: salmon;
+}
+
+.board .player2
+{
+    background-color: gold;
+}

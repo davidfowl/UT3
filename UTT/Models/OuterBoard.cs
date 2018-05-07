@@ -1,11 +1,17 @@
+using System.Diagnostics;
+
 namespace UTT
 {
     public class OuterBoard
     {
+        private int _remaining = 9;
+
         // 3x3 inner board
         public InnerBoard[][] Boards { get; set; }
 
-        public string Winner { get; set; }
+        public int Winner { get; set; }
+
+        public bool IsFull => _remaining == 0;
 
         public OuterBoard()
         {
@@ -20,21 +26,41 @@ namespace UTT
             }
         }
 
+        public void RemoveBoard()
+        {
+            Debug.Assert(_remaining > 0);
+
+            _remaining--;
+        }
+
         public void CheckWinner()
         {
+            if (Winner != 0)
+            {
+                return;
+            }
+
             for (var i = 0; i < 3; ++i)
             {
+                var h1 = Boards[i][0];
+                var h2 = Boards[i][1];
+                var h3 = Boards[i][2];
+
                 // Horizontal
-                if (Boards[i][0].Winner != null && Boards[i][0].Winner == Boards[i][1].Winner && Boards[i][1].Winner == Boards[i][2].Winner)
+                if (h1.Winner != 0 && h1.Winner == h2.Winner && h2.Winner == h3.Winner)
                 {
-                    Winner = Boards[i][0].Winner;
+                    Winner = h1.Winner;
                     return;
                 }
 
+                var v1 = Boards[0][i];
+                var v2 = Boards[1][i];
+                var v3 = Boards[2][i];
+
                 // Vertical
-                if (Boards[0][i].Winner != null && Boards[0][i].Winner == Boards[1][i].Winner && Boards[1][i].Winner == Boards[2][i].Winner)
+                if (v1.Winner != 0 && v1.Winner == v2.Winner && v2.Winner == v3.Winner)
                 {
-                    Winner = Boards[0][i].Winner;
+                    Winner = v1.Winner;
                     return;
                 }
             }
@@ -43,16 +69,24 @@ namespace UTT
             //    1,1
             // 2,0    2,2
 
+            var d1 = Boards[0][0];
+            var d2 = Boards[1][1];
+            var d3 = Boards[2][2];
+
             // Diagnoal
-            if (Boards[0][0].Winner != null && Boards[0][0].Winner == Boards[1][1].Winner && Boards[1][1].Winner == Boards[2][2].Winner)
+            if (d1.Winner != 0 && d1.Winner == d2.Winner && d2.Winner == d3.Winner)
             {
-                Winner = Boards[0][0].Winner;
+                Winner = d1.Winner;
                 return;
             }
 
-            if (Boards[0][2].Winner != null && Boards[0][2].Winner == Boards[1][1].Winner && Boards[1][1].Winner == Boards[2][0].Winner)
+            var od1 = Boards[0][2];
+            var od2 = Boards[1][1];
+            var od3 = Boards[2][0];
+
+            if (od1.Winner != 0 && od1.Winner == od2.Winner && od2.Winner == od3.Winner)
             {
-                Winner = Boards[0][2].Winner;
+                Winner = od1.Winner;
             }
         }
     }

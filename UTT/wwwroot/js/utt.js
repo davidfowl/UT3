@@ -81,10 +81,9 @@
     connection.on('gameUpdated', function (games) {
         app.games = games;
 
-        // Select the first active game
         for (var i = 0; i < app.games.length; ++i) {
             var game = app.games[i];
-            if (game.status == 1) {
+            if (game.status === 1) {
                 app.selectGame(game);
                 break;
             }
@@ -95,8 +94,6 @@
         for (var i = 0; i < app.games.length; ++i) {
             var game = app.games[i];
             if (game.id == id) {
-                game.playerTurn = nextMove.playerTurn;
-                game.nextBoardPosition = nextMove.nextBoardPosition;
                 var outerRowIndex = nextMove.outerRowIndex;
                 var outerColIndex = nextMove.outerColIndex;
                 var innerRowIndex = nextMove.innerRowIndex;
@@ -104,13 +101,20 @@
                 var value = nextMove.cellValue;
 
                 var board = game.board.boards[outerRowIndex][outerColIndex];
-                board.winner = nextMove.boardWinner;
-                game.winner = nextMove.winner;
 
-                if (game.winner) {
-                    // Game over
-                    game.status = 2;
-                }
+                // Game state
+                game.playerTurn = nextMove.playerTurn;
+                game.status = nextMove.gameStatus;
+                game.nextBoardPosition = nextMove.nextBoardPosition;
+                game.winner = nextMove.gameWinner;
+
+                // Game board state
+                game.board.winner = nextMove.gameBoardWinner;
+                game.board.isFull = nextMove.gameBoardIsFull;
+
+                // Board state
+                board.isFull = nextMove.boardIsFull;
+                board.winner = nextMove.boardWinner;
 
                 Vue.set(board.cells[innerRowIndex], innerColIndex, value);
                 break;
