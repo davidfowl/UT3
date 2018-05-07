@@ -13,6 +13,7 @@ namespace UTT
         public string Player1 { get; set; }
         public string Player2 { get; set; }
         public GameStatus Status { get; set; }
+        public string Winner => Board.Winner == 0 ? null : GetPlayer(Board.Winner);
         public string Name { get; set; }
         public string PlayerTurn { get; set; }
         public OuterBoard Board { get; set; }
@@ -31,15 +32,6 @@ namespace UTT
             var cell = board.Cells[innerRowIndex][innerColIndex];
 
             nextMove = new NextMoveState();
-            nextMove.OuterRowIndex = outerRowIndex;
-            nextMove.OuterColIndex = outerColIndex;
-            nextMove.InnerRowIndex = innerRowIndex;
-            nextMove.InnerColIndex = innerColIndex;
-            nextMove.NextBoardPosition = default(BoardPosition);
-            nextMove.PlayerTurn = null;
-            nextMove.CellValue = 0;
-            nextMove.Winner = null;
-            nextMove.BoardWinner = null;
 
             if (cell != 0)
             {
@@ -53,41 +45,58 @@ namespace UTT
                 return false;
             }
 
-            if (board.Winner != null)
+            if (board.IsFull)
             {
                 // This board is done
                 return false;
             }
 
             nextMove.CellValue = GetPlayerValue(player);
+            string playerTurn = null;
 
             switch (nextMove.CellValue)
             {
                 case 0:
                     return false;
                 case 1:
-                    nextMove.PlayerTurn = Player2;
+                    playerTurn = Player2;
                     break;
                 case 2:
-                    nextMove.PlayerTurn = Player1;
+                    playerTurn = Player1;
                     break;
             }
 
-            board.Play(innerRowIndex, innerColIndex, nextMove.CellValue, GetPlayer);
+            board.Play(innerRowIndex, innerColIndex, nextMove.CellValue);
 
-            nextMove.NextBoardPosition = new BoardPosition(innerRowIndex, innerColIndex);
+            if (board.IsFull)
+            {
+                // Remove a board if we can no longer play here
+                Board.RemoveBoard();
+            }
+
+            var nextBoard = Board.Boards[innerRowIndex][innerColIndex];
+            if (nextBoard.IsFull)
+            {
+                NextBoardPosition = new BoardPosition(-1, -1);
+            }
+            else
+            {
+                NextBoardPosition = new BoardPosition(innerRowIndex, innerColIndex);
+            }
 
             Board.CheckWinner();
 
-            if (Board.Winner != null)
+            if (Winner != null || Board.IsFull)
             {
                 Status = GameStatus.Completed;
             }
 
-            nextMove.Winner = Board.Winner;
-            nextMove.BoardWinner = board.Winner;
-            PlayerTurn = nextMove.PlayerTurn;
-            NextBoardPosition = nextMove.NextBoardPosition;
+            nextMove.OuterRowIndex = outerRowIndex;
+            nextMove.OuterColIndex = outerColIndex;
+            nextMove.InnerRowIndex = innerRowIndex;
+            nextMove.InnerColIndex = innerColIndex;
+
+            PlayerTurn = playerTurn;
 
             return true;
         }
