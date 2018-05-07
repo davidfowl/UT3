@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
 using Newtonsoft.Json;
@@ -59,27 +57,5 @@ namespace UTT
 
             return Clients.All.SendAsync("UsersChanged", User.GetUsers());
         }
-    }
-
-    public class User
-    {
-        public string Name { get; set; }
-
-        private static ConcurrentDictionary<string, User> _users = new ConcurrentDictionary<string, User>();
-
-        public static void AddUser(string user)
-        {
-            _users.TryAdd(user, new User
-            {
-                Name = user
-            });
-        }
-
-        public static void Remove(string user)
-        {
-            _users.TryRemove(user, out _);
-        }
-
-        public static IEnumerable<User> GetUsers() => _users.Values;
     }
 }
