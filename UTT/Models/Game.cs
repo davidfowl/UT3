@@ -75,18 +75,7 @@ namespace UTT
 
             board.Play(innerRowIndex, innerColIndex, nextMove.CellValue, GetPlayer);
 
-            // Get the next board to check it for validity
-            var nextBoard = Board.Boards[innerRowIndex][innerColIndex];
-
-            if (nextBoard.Winner != null)
-            {
-                // The next board is full so the board is open again
-                nextMove.NextBoardPosition = new BoardPosition(-1, -1);
-            }
-            else
-            {
-                nextMove.NextBoardPosition = new BoardPosition(innerRowIndex, innerColIndex);
-            }
+            nextMove.NextBoardPosition = new BoardPosition(innerRowIndex, innerColIndex);
 
             Board.CheckWinner();
 

@@ -1,13 +1,18 @@
 using System;
+using System.Diagnostics;
 
 namespace UTT
 {
     public class InnerBoard
     {
+        private int _remaining = 9;
+
         // 3x3 tic tac toe board
         public int[][] Cells { get; set; }
 
         public string Winner { get; set; }
+
+        public bool IsFull => _remaining == 0;
 
         public InnerBoard()
         {
@@ -21,8 +26,16 @@ namespace UTT
         public void Play(int row, int column, int value, Func<int, string> getPlayer)
         {
             Cells[row][column] = value;
-            
-            CheckWinner(getPlayer);
+
+            if (Winner != null)
+            {
+                CheckWinner(getPlayer);
+            }
+
+            // We should never be able to get here if the slot isn't empty
+            Debug.Assert(_remaining > 0);
+
+            _remaining--;
         }
 
         private void CheckWinner(Func<int, string> getPlayer)
