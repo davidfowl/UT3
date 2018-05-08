@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.Azure.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,10 +22,17 @@ namespace UTT
 
         public IConfiguration Configuration { get; private set; }
 
+        public bool UseAzureSignalR => Configuration[ServiceOptions.ConnectionStringDefaultKey] != null;
+
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
-            services.AddSignalR();
+            var builder = services.AddSignalR();
+
+            if (UseAzureSignalR)
+            {
+                builder.AddAzureSignalR();
+            }
 
             services.Configure<ForwardedHeadersOptions>(options => options.ForwardedHeaders = ForwardedHeaders.All);
 
@@ -52,10 +60,20 @@ namespace UTT
 
             app.UseMvc();
 
-            app.UseSignalR(routes =>
+            if (UseAzureSignalR)
             {
-                routes.MapHub<UTTHub>("/utt");
-            });
+                app.UseAzureSignalR(routes =>
+                {
+                    routes.MapHub<UTTHub>("/utt");
+                });
+            }
+            else
+            {
+                app.UseSignalR(routes =>
+                {
+                    routes.MapHub<UTTHub>("/utt");
+                });
+            }
         }
     }
 }
