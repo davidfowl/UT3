@@ -3,6 +3,16 @@ body {
     font-size: 13px;
 }
 
+#userCount {
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 0.3em 0.3em;
+    font-size: 1.4em;
+    background-color: #01347e;
+    color: #fff;
+}
+
 #gameArea {
     
 }

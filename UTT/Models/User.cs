@@ -9,6 +9,8 @@ namespace UTT
 
         private static ConcurrentDictionary<string, User> _users = new ConcurrentDictionary<string, User>();
 
+        public static int Count;
+
         public static void AddUser(string user)
         {
             _users.TryAdd(user, new User

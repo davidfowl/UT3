@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
@@ -17,8 +18,10 @@ namespace UTT
                 User.AddUser(UserName);
             }
 
+            Interlocked.Increment(ref User.Count);
+
             await Clients.All.SendAsync("GameUpdated", Game.GetGames());
-            await Clients.All.SendAsync("UsersChanged", User.GetUsers());
+            await Clients.All.SendAsync("UsersChanged", User.GetUsers(), User.Count);
         }
 
         [Authorize]
@@ -65,7 +68,9 @@ namespace UTT
                 User.Remove(UserName);
             }
 
-            return Clients.All.SendAsync("UsersChanged", User.GetUsers());
+            Interlocked.Decrement(ref User.Count);
+
+            return Clients.All.SendAsync("UsersChanged", User.GetUsers(), User.Count);
         }
     }
 }

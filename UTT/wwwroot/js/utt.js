@@ -14,6 +14,7 @@
             game: null,
             newGame: '',
             users: [],
+            userCount: 0,
             messages: [],
             message: ''
         },
@@ -78,8 +79,9 @@
         }
     });
 
-    connection.on('usersChanged', function (users) {
+    connection.on('usersChanged', function (users, userCount) {
         app.users = users;
+        app.userCount = userCount;
     });
 
     connection.on('lobbyMessage', function (from, message) {
