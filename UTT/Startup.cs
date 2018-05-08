@@ -26,11 +26,6 @@ namespace UTT
             services.AddMvc();
             services.AddSignalR();
 
-            services.Configure<ForwardedHeadersOptions>(options =>
-            {
-                options.ForwardedHeaders = ForwardedHeaders.All;
-            });
-
             services.AddAuthentication("Cookies")
                     .AddCookie()
                     .AddTwitter(
@@ -41,18 +36,10 @@ namespace UTT
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            app.UseForwardedHeaders();
-
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
-            else
-            {
-                app.UseHsts();
-            }
-
-            app.UseHttpsRedirection();
 
             app.UseStaticFiles();
 
