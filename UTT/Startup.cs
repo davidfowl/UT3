@@ -39,7 +39,12 @@ namespace UTT
             {
                 app.UseDeveloperExceptionPage();
             }
+            else
+            {
+                app.UseHsts();
+            }
 
+            app.UseForwardedHeaders();
             app.UseHttpsRedirection();
 
             app.UseStaticFiles();
