@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -25,6 +26,11 @@ namespace UTT
             services.AddMvc();
             services.AddSignalR();
 
+            services.Configure<ForwardedHeadersOptions>(options =>
+            {
+                options.ForwardedHeaders = ForwardedHeaders.All;
+            });
+
             services.AddAuthentication("Cookies")
                     .AddCookie()
                     .AddTwitter(
@@ -35,6 +41,8 @@ namespace UTT
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
+            app.UseForwardedHeaders();
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -44,7 +52,6 @@ namespace UTT
                 app.UseHsts();
             }
 
-            app.UseForwardedHeaders();
             app.UseHttpsRedirection();
 
             app.UseStaticFiles();
