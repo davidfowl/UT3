@@ -68,9 +68,35 @@ body {
     color:#bbb;
 }
 
+.my-turn span.active {
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    background-color: #fff1a4;
+    border: 1px solid #808080;
+    text-indent: -90000px;
+}
+
+.board td {
+    cursor: not-allowed;
+}
+
 .board .active
 {
-    background-color: gold;
+   
+}
+
+:not(.my-turn) .board .active {
+    background-color: #ccc;
+}
+
+.my-turn .board .active {
+    background-color: #fff1a4;
+    cursor: pointer;
+}
+
+.my-turn .board .active:hover {
+    background-color: #ffd800;
 }
 
 .board .player1
@@ -81,4 +107,73 @@ body {
 .board .player2
 {
     background-color: gold;
+}
+
+.board {
+    border-spacing: 0;
+}
+
+.board td {
+    margin: 0;
+}
+
+.outer-board > tbody > tr > td {
+    padding: 15px;
+}
+
+.outer-board tr:first-child > td:first-child,
+.outer-board tr:first-child > td:nth-child(2) {
+    border-right: 1px solid red;
+    border-bottom: 1px solid red;
+}
+.outer-board tr:first-child > td:last-child {
+    border-bottom: 1px solid red;
+}
+
+.outer-board tr:nth-child(2) > td:first-child,
+.outer-board tr:nth-child(2) > td:nth-child(2) {
+    border-right: 1px solid red;
+    border-bottom: 1px solid red;
+}
+.outer-board tr:nth-child(2) > td:last-child {
+    border-bottom: 1px solid red;
+}
+
+.outer-board tr:last-child > td:first-child,
+.outer-board tr:last-child > td:nth-child(2) {
+    border-right: 1px solid red;
+}
+
+.inner-board td {
+    border: none;
+    width: 80px;
+    height: 80px;
+    font-size: 60px;
+    text-align: center;
+    vertical-align: central;
+}
+
+.inner-board tr:first-child > td:first-child,
+.inner-board tr:first-child > td:nth-child(2) {
+    border-right-color: #808080;
+    border-bottom-color: #808080;
+}
+
+.inner-board tr:first-child > td:last-child {
+    border-bottom-color: #808080;
+}
+
+.inner-board tr:nth-child(2) > td:first-child,
+.inner-board tr:nth-child(2) > td:nth-child(2) {
+    border-right-color: #808080;
+    border-bottom-color: #808080;
+}
+
+.inner-board tr:nth-child(2) > td:last-child {
+    border-bottom-color: #808080;
+}
+
+.inner-board tr:last-child > td:first-child,
+.inner-board tr:last-child > td:nth-child(2) {
+    border-right-color: #808080;
 }

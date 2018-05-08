@@ -66,6 +66,9 @@
                     return;
                 }
                 connection.invoke('playTurn', this.game.id, outerRowIndex, outerColIndex, innerRowIndex, innerColIndex);
+            },
+            cellIsActive(cell, outerRowIndex, outerColIndex) {
+                return this.game.nextBoardPosition.row == -1 || (this.game.status !== 2 && cell === 0 && outerRowIndex === this.game.nextBoardPosition.row && outerColIndex === this.game.nextBoardPosition.column);
             }
         }
     });

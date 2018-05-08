@@ -75,7 +75,7 @@ namespace UTT
             }
 
             var nextBoard = Board.Boards[innerRowIndex][innerColIndex];
-            if (nextBoard.IsFull)
+            if (nextBoard.IsFull || nextBoard.Winner != 0)
             {
                 NextBoardPosition = new BoardPosition(-1, -1);
             }
