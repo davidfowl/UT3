@@ -91,11 +91,13 @@
     connection.on('gameUpdated', function (games) {
         app.games = games;
 
-        for (var i = 0; i < app.games.length; ++i) {
-            var game = app.games[i];
-            if (game.status === 1) {
-                app.selectGame(game);
-                break;
+        if (!app.game) {
+            for (var i = 0; i < app.games.length; ++i) {
+                var game = app.games[i];
+                if (game.status === 1) {
+                    app.selectGame(game);
+                    break;
+                }
             }
         }
     });
