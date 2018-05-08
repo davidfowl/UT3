@@ -90,15 +90,15 @@ h2.game-status {
     background-color: #29bbff;
 }
 
-.board .player1
-{
-    background-color: salmon;
-}
+    .my-turn.player1 .board .active:hover div:after {
+        content: 'X';
+        color: #01347e;
+    }
 
-.board .player2
-{
-    background-color: gold;
-}
+    .my-turn.player2 .board .active:hover div:after {
+        content: 'O';
+        color: #01347e;
+    }
 
 .board {
     border-spacing: 0;

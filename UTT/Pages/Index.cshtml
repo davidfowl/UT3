@@ -12,7 +12,7 @@
 
 <body>
     <div id="app" class="container">
-        <h1>Ultimate Tic Tac Toe</h1>
+        <h1>Ultimate Tic-Tac-Toe</h1>
 
         @if (User.Identity.IsAuthenticated)
         {
@@ -23,25 +23,13 @@
             <a asp-page="/Login">Login</a>
         }
 
-        <h2>Games</h2>
-        <ul>
-            <li v-for="game in games">
-                {{ game.name }} ({{ getStatus(game) }})
-                <a href="#" v-on:click="selectGame(game)" v-if="game.status != 0">Select</a>
-                <a href="#" v-on:click="joinGame(game.id)" v-if="game.status == 0 && game.player1 != name">Join</a>
-            </li>
-        </ul>
-        
-        <form action="#" v-on:submit.prevent="startGame">
-            <input type="text" v-model="newGame" />
-            <input type="submit" id="send" value="Start new game" class="send" />
-        </form>
-
         <div class="row">
             <div class="col-sm-9">
                 <div id="gameArea"
                      v-if="game && game.status != 0"
-                     v-bind:class="{ 'my-turn': game.status !== 2 && name === game.playerTurn }">
+                     v-bind:class="{ 'my-turn': game.status !== 2 && name === game.playerTurn,
+                                     player1: name === game.player1,
+                                     player2: name === game.player2 }">
                     <h2>Game "{{ game.name }}": {{ game.player1 }} (X) vs. {{ game.player2 }} (O)</h2>
                     <h2 v-if="game.status !== 2" class="game-status">
                         <span v-if="name === game.playerTurn">Your Turn! Play in one of the <span class="active">active</span> squares.</span>
@@ -59,7 +47,7 @@
                                                 <td v-for="(cell, innerColIndex) in gameRow"
                                                     v-on:click="playCell(outerRowIndex, outerColIndex, innerRowIndex, innerColIndex)"
                                                     v-bind:class="{ active: cellIsActive(cell, outerRowIndex, outerColIndex) }">
-                                                    <div v-if="cell == '0'">&nbsp;</div>
+                                                    <div v-if="cell == '0'"></div>
                                                     <div v-if="cell == '1'">X</div>
                                                     <div v-if="cell == '2'">O</div>
                                                 </td>
@@ -73,8 +61,23 @@
                 </div>
             </div>
             <div class="col-sm-3">
+                <div id="gameListArea">
+                    <h3>Games</h3>
+                    <ul>
+                        <li v-for="game in games">
+                            {{ game.name }} ({{ getStatus(game) }})
+                            <a href="#" v-on:click="selectGame(game)" v-if="game.status != 0">Select</a>
+                            <a href="#" v-on:click="joinGame(game.id)" v-if="game.status == 0 && game.player1 != name">Join</a>
+                        </li>
+                    </ul>
+
+                    <form action="#" v-on:submit.prevent="startGame">
+                        <input type="text" v-model="newGame" placeholder="Enter a new game name" />
+                        <input type="submit" id="send" value="Create game" class="send" />
+                    </form>
+                </div>
                 <div id="chatArea">
-                    <h2>Chat</h2>
+                    <h3>Chat</h3>
                     <ul id="messages">
                         <li v-for="message in messages">{{ message.from }}: {{ message.text }}</li>
                     </ul>
