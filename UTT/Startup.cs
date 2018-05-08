@@ -27,7 +27,7 @@ namespace UTT
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
-            var builder = services.AddSignalR();
+            var builder = services.AddSignalR(o => o.EnableDetailedErrors = true);
 
             if (UseAzureSignalR)
             {
