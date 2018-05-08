@@ -3,7 +3,7 @@
 
     var connection = new signalR.HubConnectionBuilder()
         .withUrl('/utt')
-        .configureLogging(signalR.LogLevel.Trace)
+        //.configureLogging(signalR.LogLevel.Trace)
         .build();
 
     var app = new Vue({
@@ -37,6 +37,11 @@
                     connection.invoke('createGame', this.newGame);
                     this.newGame = '';
                 }
+            },
+            getPlayerId() {
+                return this.game.player1 === name ? 1 :
+                    this.game.player2 === name ? 2 :
+                        0;
             },
             selectGame: function (game) {
                 this.game = game;
