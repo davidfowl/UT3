@@ -3,12 +3,18 @@ body {
     font-size: 13px;
 }
 
+#gameArea {
+    
+}
+
+#chatArea {
+    
+}
+
 #messages
 {
-    width: 70%;
     border: 1px solid #ccc;
     height: 500px;
-    float: left;
     margin-left: 0px;
     padding-left: 0px;
     overflow-y: auto;
@@ -19,27 +25,6 @@ body {
     list-style-type: none;
     padding: 3px;
 }
-
-#users
-{
-    width: 17%;
-    height: 500px;
-    border-right: 1px solid #ccc;
-    border-top: 1px solid #ccc;
-    border-bottom: 1px solid #ccc;
-    float: left;
-    margin-left: 0px;
-    padding-left: 0px;
-    overflow: auto;
-    font-size: small;
-    white-space: nowrap;
-}
-
-#users li
-{
-    padding: 4px;
-}
-
 .clear
 {
     clear: both;
@@ -51,6 +36,12 @@ body {
     width: 70%;
     padding: 5px;
     border: 1px solid #ccc;
+}
+
+h2.game-status {
+    background-color: #0c49a2;
+    color: #fff;
+    text-align: center;
 }
 
 .error 
@@ -72,7 +63,7 @@ body {
     display: inline-block;
     width: 1em;
     height: 1em;
-    background-color: #fff1a4;
+    background-color: #a4e2ff;
     border: 1px solid #808080;
     text-indent: -90000px;
 }
@@ -91,12 +82,12 @@ body {
 }
 
 .my-turn .board .active {
-    background-color: #fff1a4;
+    background-color: #a4e2ff;
     cursor: pointer;
 }
 
 .my-turn .board .active:hover {
-    background-color: #ffd800;
+    background-color: #29bbff;
 }
 
 .board .player1

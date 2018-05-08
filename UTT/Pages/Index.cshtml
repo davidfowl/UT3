@@ -6,11 +6,12 @@
 <head>
     <script src="https://cdn.jsdelivr.net/npm/vue"></script>
     <script src="/js/signalr.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="/css/site.css" />
 </head>
 
 <body>
-    <div id="app">
+    <div id="app" class="container">
         <h1>Ultimate Tic Tac Toe</h1>
 
         @if (User.Identity.IsAuthenticated)
@@ -37,57 +38,57 @@
             <input type="submit" id="send" value="Start new game" class="send" />
         </form>
 
-        <div v-if="game && game.status != 0"
-             v-bind:class="{ 'my-turn': game.status !== 2 && name === game.playerTurn }">
-            <h2>Game "{{ game.name }}": {{ game.player1 }} (X) vs. {{ game.player2 }} (O)</h2>
-            <h2 v-if="game.status !== 2">
-                <span v-if="name === game.playerTurn">Your Turn! Play in one of the <span class="active">active</span> squares.</span>
-                <span v-if="name !== game.playerTurn">Waiting for other player</span>
-            </h2>
-            <h2 v-if="game.winner">{{ game.winner }} Won!</h2>
-            <h2 v-if="game.status == 2 && !game.winner">DRAW</h2>
-            <table border="0" class="board outer-board">
-                <tbody>
-                    <tr v-for="(row, outerRowIndex) in game.board.boards">
-                        <td v-for="(board, outerColIndex) in row">
-                            <table border="0" class="board inner-board">
-                                <tbody>
-                                    <tr v-for="(gameRow, innerRowIndex) in board.cells">
-                                        <td v-for="(cell, innerColIndex) in gameRow" 
-                                            v-on:click="playCell(outerRowIndex, outerColIndex, innerRowIndex, innerColIndex)" 
-                                            v-bind:class="{ active: cellIsActive(cell, outerRowIndex, outerColIndex) }">
-                                            <div v-if="cell == '0'">&nbsp;</div>
-                                            <div v-if="cell == '1'">X</div>
-                                            <div v-if="cell == '2'">O</div>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-
-        <h2>Chat</h2>
-
-        <div id="chat-area">
-            <ul id="messages">
-                <li v-for="message in messages">{{ message.from }}: {{ message.text }}</li>
-            </ul>
-            <ul id="users">
-                <li>
-                    <b>Users online</b>
-                </li>
-                <li v-for="user in users">{{ user.name }}</li>
-            </ul>
-            <div class="clear">
+        <div class="row">
+            <div class="col-sm-9">
+                <div id="gameArea"
+                     v-if="game && game.status != 0"
+                     v-bind:class="{ 'my-turn': game.status !== 2 && name === game.playerTurn }">
+                    <h2>Game "{{ game.name }}": {{ game.player1 }} (X) vs. {{ game.player2 }} (O)</h2>
+                    <h2 v-if="game.status !== 2" class="game-status">
+                        <span v-if="name === game.playerTurn">Your Turn! Play in one of the <span class="active">active</span> squares.</span>
+                        <span v-if="name !== game.playerTurn">Waiting for other player</span>
+                    </h2>
+                    <h2 v-if="game.winner">{{ game.winner }} Won!</h2>
+                    <h2 v-if="game.status == 2 && !game.winner">DRAW</h2>
+                    <table border="0" class="board outer-board">
+                        <tbody>
+                            <tr v-for="(row, outerRowIndex) in game.board.boards">
+                                <td v-for="(board, outerColIndex) in row">
+                                    <table border="0" class="board inner-board">
+                                        <tbody>
+                                            <tr v-for="(gameRow, innerRowIndex) in board.cells">
+                                                <td v-for="(cell, innerColIndex) in gameRow"
+                                                    v-on:click="playCell(outerRowIndex, outerColIndex, innerRowIndex, innerColIndex)"
+                                                    v-bind:class="{ active: cellIsActive(cell, outerRowIndex, outerColIndex) }">
+                                                    <div v-if="cell == '0'">&nbsp;</div>
+                                                    <div v-if="cell == '1'">X</div>
+                                                    <div v-if="cell == '2'">O</div>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
-            <form action="#" v-on:submit.prevent="addChatMessage">
-                <input type="text" id="new-message" v-model="message" />
-                <input type="submit" id="send" value="Send" class="send" />
-            </form>
+            <div class="col-sm-3">
+                <div id="chatArea">
+                    <h2>Chat</h2>
+                    <ul id="messages">
+                        <li v-for="message in messages">{{ message.from }}: {{ message.text }}</li>
+                    </ul>
+                    <div class="clear">
+                    </div>
+                    <form action="#" v-on:submit.prevent="addChatMessage">
+                        <input type="text" id="new-message" v-model="message" />
+                        <input type="submit" id="send" value="Send" class="send" />
+                    </form>
+                </div>
+            </div>
         </div>
+
     </div>
     <script>
         var userName = '@Model.UserName';
