@@ -42,6 +42,12 @@ namespace UTT
                         options => Configuration.GetSection("twitter").Bind(options))
                     .AddGoogle(
                         options => Configuration.GetSection("google").Bind(options));
+
+            services.AddTransient<Microsoft.Extensions.Hosting.IHostedService, Scavenger>();
+
+            // TODO: Design something less static 
+            // Initialize game settings from configuration
+            Game.Initialize(Configuration);
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)

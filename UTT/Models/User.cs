@@ -13,6 +13,11 @@ namespace UTT
 
         public static void AddUser(string user)
         {
+            if (string.IsNullOrEmpty(user))
+            {
+                return;
+
+            }
             _users.TryAdd(user, new User
             {
                 Name = user
@@ -21,6 +26,11 @@ namespace UTT
 
         public static void Remove(string user)
         {
+            if (string.IsNullOrEmpty(user))
+            {
+                return;
+            }
+
             _users.TryRemove(user, out _);
         }
 

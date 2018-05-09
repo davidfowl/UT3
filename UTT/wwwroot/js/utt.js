@@ -13,7 +13,6 @@
             games: [],
             game: null,
             newGame: '',
-            users: [],
             userCount: 0,
             messages: [],
             message: ''
@@ -79,8 +78,7 @@
         }
     });
 
-    connection.on('usersChanged', function (users, userCount) {
-        app.users = users;
+    connection.on('usersChanged', function (userCount) {
         app.userCount = userCount;
     });
 
@@ -134,5 +132,18 @@
         }
     });
 
-    connection.start();
+    // Reconnect loop
+    function start() {
+        connection.start().catch(function (err) {
+            setTimeout(function () {
+                start();
+            }, 5000);
+        });
+    }
+
+    connection.onclose(function () {
+        start();
+    });
+
+    start();
 })(userName);

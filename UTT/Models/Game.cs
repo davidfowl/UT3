@@ -1,13 +1,27 @@
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading;
+using Microsoft.Extensions.Configuration;
 
 namespace UTT
 {
     public class Game
     {
+        // How long should we allow a new game to go without starting
+        private static TimeSpan WaitingGameLimit = TimeSpan.FromMinutes(10);
+
+        // How long should we allow a game to go without playing a move
+        private static TimeSpan PlayingWithoutMoveLimit = TimeSpan.FromMinutes(5);
+
+        // How long should game stick around after completing
+        private static TimeSpan EndedGameLimit = TimeSpan.FromMinutes(5);
+
         private static ConcurrentDictionary<int, Game> _games = new ConcurrentDictionary<int, Game>();
         private static int _id;
+
+        private DateTimeOffset _lastMovePlayedAt = DateTimeOffset.UtcNow;
+        private DateTimeOffset _endedAt;
 
         public int Id { get; set; }
         public string Player1 { get; set; }
@@ -66,6 +80,9 @@ namespace UTT
                     break;
             }
 
+            // Record the last time played
+            _lastMovePlayedAt = DateTimeOffset.UtcNow;
+
             board.Play(innerRowIndex, innerColIndex, nextMove.CellValue);
 
             if (board.IsFull)
@@ -88,7 +105,7 @@ namespace UTT
 
             if (Winner != null || Board.IsFull)
             {
-                Status = GameStatus.Completed;
+                MarkCompleted();
             }
 
             nextMove.OuterRowIndex = outerRowIndex;
@@ -100,7 +117,7 @@ namespace UTT
 
             nextMove.GameStatus = Status;
             nextMove.GameWinner = Winner;
-            
+
             nextMove.GameBoardWinner = Board.Winner;
             nextMove.GameBoardIsFull = Board.IsFull;
 
@@ -110,6 +127,12 @@ namespace UTT
             PlayerTurn = playerTurn;
 
             return true;
+        }
+
+        private void MarkCompleted()
+        {
+            Status = GameStatus.Completed;
+            _endedAt = DateTimeOffset.UtcNow;
         }
 
         private string GetPlayer(int value)
@@ -132,6 +155,35 @@ namespace UTT
             }
 
             return player == Player1 ? 1 : 2;
+        }
+
+        public static void Initialize(IConfiguration configuration)
+        {
+            if (TryParseMinutes(configuration["UTT:WaitingGameLimit"], out var timeSpan))
+            {
+                WaitingGameLimit = timeSpan;
+            }
+
+            if (TryParseMinutes(configuration["UTT:PlayingWithoutMoveLimit"], out timeSpan))
+            {
+                PlayingWithoutMoveLimit = timeSpan;
+            }
+
+            if (TryParseMinutes(configuration["UTT:EndedGameLimit"], out timeSpan))
+            {
+                EndedGameLimit = timeSpan;
+            }
+        }
+
+        private static bool TryParseMinutes(string value, out TimeSpan timeSpan)
+        {
+            timeSpan = TimeSpan.Zero;
+            if (!string.IsNullOrEmpty(value) && Int32.TryParse(value, out var intVal))
+            {
+                timeSpan = TimeSpan.FromMinutes(intVal);
+                return true;
+            }
+            return false;
         }
 
         public static bool PlayTurn(string player,
@@ -182,5 +234,51 @@ namespace UTT
         }
 
         public static IEnumerable<Game> GetGames() => _games.Values;
+
+        public static bool MarkExpiredGames()
+        {
+            var now = DateTimeOffset.UtcNow;
+            var stateChanged = false;
+
+            foreach (var game in _games)
+            {
+                var elapsed = now.Subtract(game.Value._lastMovePlayedAt);
+
+                // PlayingWithoutMoveLimit without playing then mark the game as completed
+                if (game.Value.Status == GameStatus.Playing && elapsed > PlayingWithoutMoveLimit)
+                {
+                    game.Value.MarkCompleted();
+                    stateChanged = true;
+                }
+
+                // If the player has been waiting for more than WaitingGameLimit minutes for somebody to join the game
+                // mark it as completed
+                if (game.Value.Status == GameStatus.Waiting && elapsed > WaitingGameLimit)
+                {
+                    game.Value.MarkCompleted();
+                    stateChanged = true;
+                }
+            }
+            return stateChanged;
+        }
+
+        public static int RemoveCompletedGames()
+        {
+            var removed = 0;
+            var now = DateTimeOffset.UtcNow;
+
+            foreach (var game in _games)
+            {
+                // Remove games that ended for > 5 minutes
+                if (game.Value.Status == GameStatus.Completed &&
+                    now.Subtract(game.Value._endedAt) > EndedGameLimit)
+                {
+                    _games.TryRemove(game.Key, out _);
+                    removed++;
+                }
+            }
+
+            return removed;
+        }
     }
 }

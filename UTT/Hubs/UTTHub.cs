@@ -21,7 +21,7 @@ namespace UTT
             Interlocked.Increment(ref User.Count);
 
             await Clients.All.SendAsync("GameUpdated", Game.GetGames());
-            await Clients.All.SendAsync("UsersChanged", User.GetUsers(), User.Count);
+            await Clients.All.SendAsync("UsersChanged", User.Count);
         }
 
         [Authorize]
@@ -33,6 +33,11 @@ namespace UTT
         [Authorize]
         public Task CreateGame(string name)
         {
+            if (string.IsNullOrEmpty(UserName))
+            {
+                return Task.CompletedTask;
+            }
+
             Game.CreateGame(UserName, name);
             return Clients.All.SendAsync("GameUpdated", Game.GetGames());
         }
@@ -70,7 +75,7 @@ namespace UTT
 
             Interlocked.Decrement(ref User.Count);
 
-            return Clients.All.SendAsync("UsersChanged", User.GetUsers(), User.Count);
+            return Clients.All.SendAsync("UsersChanged", User.Count);
         }
     }
 }
