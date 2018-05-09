@@ -89,13 +89,18 @@
     connection.on('gameUpdated', function (games) {
         app.games = games;
 
-        if (!app.game) {
-            for (var i = 0; i < app.games.length; ++i) {
-                var game = app.games[i];
-                if (game.status === 1) {
-                    app.selectGame(game);
-                    break;
-                }
+        for (var i = 0; i < app.games.length; ++i) {
+            var game = app.games[i];
+
+            // Select the first active game if there's no selected game
+            if (!app.game && game.status === 1) {
+                app.selectGame(game);
+                break;
+            }
+            
+            // Update the game state
+            if (app.game && app.game.id === game.id) {
+                app.game = game;
             }
         }
     });
