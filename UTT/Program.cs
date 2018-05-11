@@ -19,6 +19,10 @@ namespace UTT
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
+                .ConfigureLogging(logging =>
+                {
+                    logging.AddFilter("Microsoft.Azure.SignalR", LogLevel.Trace);
+                })
                 .UseStartup<Startup>();
     }
 }
