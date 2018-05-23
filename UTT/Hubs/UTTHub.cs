@@ -9,11 +9,11 @@ namespace UTT
 {
     public class UTTHub : Hub
     {
-        public string UserName => Context.User.Identity.Name;
+        public string UserName => Context.User?.Identity.Name;
 
         public override async Task OnConnectedAsync()
         {
-            if (Context.User.Identity.IsAuthenticated)
+            if (Context.User?.Identity.IsAuthenticated == true)
             {
                 User.AddUser(UserName);
             }
@@ -67,7 +67,7 @@ namespace UTT
 
         public override Task OnDisconnectedAsync(Exception exception)
         {
-            if (Context.User.Identity.IsAuthenticated)
+            if (Context.User?.Identity.IsAuthenticated == true)
             {
                 // TODO: Handle stopping games that include this user
                 User.Remove(UserName);
