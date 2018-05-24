@@ -6,11 +6,11 @@ COPY *.csproj ./
 RUN dotnet restore
 
 COPY / .
-RUN dotnet publish -c Release -o out
+RUN dotnet publish -c Release -r linux-musl-x64 -o out
 
-FROM microsoft/dotnet:2.1.0-rc1-aspnetcore-runtime-alpine AS runtime
+FROM microsoft/dotnet:2.1-runtime-deps-alpine AS runtime
 ENV ASPNETCORE_URLS http://+:80
 WORKDIR /app
 COPY --from=build /app/out ./
 
-ENTRYPOINT ["dotnet", "UTT.dll"]
+ENTRYPOINT ["./UTT"]
