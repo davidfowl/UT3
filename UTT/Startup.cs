@@ -43,7 +43,7 @@ namespace UTT
                     .AddGoogle(
                         options => Configuration.GetSection("google").Bind(options));
 
-            services.AddTransient<Microsoft.Extensions.Hosting.IHostedService, Scavenger>();
+            services.AddHostedService<Scavenger>();
 
             // TODO: Design something less static 
             // Initialize game settings from configuration
