@@ -1,4 +1,4 @@
-FROM microsoft/dotnet:2.1-sdk-stretch AS build
+FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /app
 
 # Copy csproj and restore as distinct layers
@@ -6,9 +6,9 @@ COPY /UTT/*.csproj ./
 RUN dotnet restore
 
 COPY /UTT .
-RUN dotnet publish -c Release -r linux-musl-x64 -o out
+RUN dotnet publish -c Release -r linux-musl-x64 --self-contained -o out /p:PublishSingleFile=true
 
-FROM microsoft/dotnet:2.1-runtime-deps-alpine AS runtime
+FROM mcr.microsoft.com/dotnet/runtime-deps:6.0 AS runtime
 ENV ASPNETCORE_URLS http://+:80
 WORKDIR /app
 COPY --from=build /app/out ./

@@ -22,12 +22,13 @@ namespace UTT
 
             }
 
-            _users.TryAdd(user, new User
+            if (_users.TryAdd(user, new User
             {
                 Name = user
-            });
-
-            Interlocked.Increment(ref _count);
+            }))
+            {
+                Interlocked.Increment(ref _count);
+            }
         }
 
         public static void Remove(string user)
@@ -37,8 +38,10 @@ namespace UTT
                 return;
             }
 
-            _users.TryRemove(user, out _);
-            Interlocked.Decrement(ref _count);
+            if (_users.TryRemove(user, out _))
+            {
+                Interlocked.Decrement(ref _count);
+            }
         }
 
         public static IEnumerable<User> GetUsers() => _users.Values;
