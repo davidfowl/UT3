@@ -25,11 +25,6 @@ Game.Initialize(builder.Configuration);
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseDeveloperExceptionPage();
-}
-
 app.UseForwardedHeaders();
 app.UseHttpsRedirection();
 
