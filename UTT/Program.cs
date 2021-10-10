@@ -1,5 +1,6 @@
-﻿using Microsoft.AspNetCore.HttpOverrides;
-using UTT;
+﻿global using UTT;
+
+using Microsoft.AspNetCore.HttpOverrides;
 
 var builder = WebApplication.CreateBuilder(args);
 

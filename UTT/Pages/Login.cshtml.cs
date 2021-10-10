@@ -5,34 +5,33 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace UTT
+namespace UTT;
+
+public class LoginModel : PageModel
 {
-    public class LoginModel : PageModel
+    private readonly IAuthenticationSchemeProvider _authSchemeProvider;
+
+    public LoginModel(IAuthenticationSchemeProvider authSchemeProvider)
     {
-        private readonly IAuthenticationSchemeProvider _authSchemeProvider;
+        _authSchemeProvider = authSchemeProvider;
+    }
 
-        public LoginModel(IAuthenticationSchemeProvider authSchemeProvider)
+    public IEnumerable<AuthenticationScheme> AuthSchemes { get; set; }
+
+    public async Task<IActionResult> OnGet()
+    {
+        if (User.Identity.IsAuthenticated)
         {
-            _authSchemeProvider = authSchemeProvider;
+            return RedirectToPage("/Index");
         }
 
-        public IEnumerable<AuthenticationScheme> AuthSchemes { get; set; }
+        AuthSchemes = await _authSchemeProvider.GetRequestHandlerSchemesAsync();
 
-        public async Task<IActionResult> OnGet()
-        {
-            if (User.Identity.IsAuthenticated)
-            {
-                return RedirectToPage("/Index");
-            }
+        return Page();
+    }
 
-            AuthSchemes = await _authSchemeProvider.GetRequestHandlerSchemesAsync();
-
-            return Page();
-        }
-
-        public IActionResult OnPost(string scheme)
-        {
-            return Challenge(new AuthenticationProperties { RedirectUri = Url.Page("/Index") }, scheme);
-        }
+    public IActionResult OnPost(string scheme)
+    {
+        return Challenge(new AuthenticationProperties { RedirectUri = Url.Page("/Index") }, scheme);
     }
 }

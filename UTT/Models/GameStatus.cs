@@ -1,9 +1,8 @@
-namespace UTT
+namespace UTT;
+
+public enum GameStatus
 {
-    public enum GameStatus
-    {
-        Waiting,
-        Playing,
-        Completed
-    }
+    Waiting,
+    Playing,
+    Completed
 }
