@@ -6,11 +6,13 @@ public class Scavenger : BackgroundService
 {
     private readonly IHubContext<UTTHub> _hubContext;
     private readonly ILogger<Scavenger> _logger;
+    
     public Scavenger(IHubContext<UTTHub> hubContext, ILogger<Scavenger> logger)
     {
         _hubContext = hubContext;
         _logger = logger;
     }
+
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         while (!stoppingToken.IsCancellationRequested)
@@ -31,7 +33,7 @@ public class Scavenger : BackgroundService
                 await _hubContext.Clients.All.SendAsync("GameUpdated", Game.GetGames());
             }
 
-            await Task.Delay(5000);
+            await Task.Delay(5000, stoppingToken);
         }
     }
 }
