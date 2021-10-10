@@ -8,7 +8,7 @@ RUN dotnet restore
 COPY /UTT .
 RUN dotnet publish -c Release -r linux-musl-x64 --self-contained -o out /p:PublishSingleFile=true
 
-FROM mcr.microsoft.com/dotnet/runtime-deps:6.0 AS runtime
+FROM mcr.microsoft.com/dotnet/runtime-deps:6.0-alpine AS runtime
 ENV ASPNETCORE_URLS http://+:80
 WORKDIR /app
 COPY --from=build /app/out ./
