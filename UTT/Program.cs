@@ -1,24 +1,48 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.AspNetCore.HttpOverrides;
+using UTT;
 
-namespace UTT
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddRazorPages();
+
+builder.Services.AddSignalR(o => o.EnableDetailedErrors = true);
+
+builder.Services.Configure<ForwardedHeadersOptions>(options => options.ForwardedHeaders = ForwardedHeaders.All);
+
+builder.Services.AddAuthentication("Cookies")
+                .AddCookie()
+                .AddTwitter(
+                    options => builder.Configuration.GetSection("twitter").Bind(options));
+                //.AddGoogle(
+                //    options => Configuration.GetSection("google").Bind(options));
+
+builder.Services.AddHostedService<Scavenger>();
+
+// TODO: Design something less static 
+// Initialize game settings from configuration
+Game.Initialize(builder.Configuration);
+
+var app = builder.Build();
+
+if (app.Environment.IsDevelopment())
 {
-    public class Program
-    {
-        public static void Main(string[] args)
-        {
-            CreateWebHostBuilder(args).Build().Run();
-        }
-
-        public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
-            WebHost.CreateDefaultBuilder(args)
-                   .UseStartup<Startup>();
-    }
+    app.UseDeveloperExceptionPage();
 }
+
+app.UseForwardedHeaders();
+app.UseHttpsRedirection();
+
+app.UseStaticFiles();
+
+app.UseRouting();
+
+app.UseAuthentication();
+app.UseAuthorization();
+
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapRazorPages();
+    endpoints.MapHub<UTTHub>("/utt");
+});
+
+app.Run();

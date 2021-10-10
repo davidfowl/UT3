@@ -3,7 +3,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
-using Newtonsoft.Json;
 
 namespace UTT
 {
@@ -17,8 +16,6 @@ namespace UTT
             {
                 User.AddUser(UserName);
             }
-
-            Interlocked.Increment(ref User.Count);
 
             await Clients.All.SendAsync("GameUpdated", Game.GetGames());
             await Clients.All.SendAsync("UsersChanged", User.Count);
@@ -72,8 +69,6 @@ namespace UTT
                 // TODO: Handle stopping games that include this user
                 User.Remove(UserName);
             }
-
-            Interlocked.Decrement(ref User.Count);
 
             return Clients.All.SendAsync("UsersChanged", User.Count);
         }

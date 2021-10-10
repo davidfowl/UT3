@@ -178,7 +178,7 @@ namespace UTT
         private static bool TryParseMinutes(string value, out TimeSpan timeSpan)
         {
             timeSpan = TimeSpan.Zero;
-            if (!string.IsNullOrEmpty(value) && Int32.TryParse(value, out var intVal))
+            if (!string.IsNullOrEmpty(value) && int.TryParse(value, out var intVal))
             {
                 timeSpan = TimeSpan.FromMinutes(intVal);
                 return true;

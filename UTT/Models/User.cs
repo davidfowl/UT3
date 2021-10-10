@@ -1,5 +1,6 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace UTT
 {
@@ -9,7 +10,9 @@ namespace UTT
 
         private static ConcurrentDictionary<string, User> _users = new ConcurrentDictionary<string, User>();
 
-        public static int Count;
+        private static int _count;
+
+        public static int Count => _count;
 
         public static void AddUser(string user)
         {
@@ -18,10 +21,13 @@ namespace UTT
                 return;
 
             }
+
             _users.TryAdd(user, new User
             {
                 Name = user
             });
+
+            Interlocked.Increment(ref _count);
         }
 
         public static void Remove(string user)
@@ -32,6 +38,7 @@ namespace UTT
             }
 
             _users.TryRemove(user, out _);
+            Interlocked.Decrement(ref _count);
         }
 
         public static IEnumerable<User> GetUsers() => _users.Values;

@@ -1,16 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <UserSecretsId>UTT</UserSecretsId>
+    <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="wwwroot\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.App" />
-    <PackageReference Include="Microsoft.Azure.SignalR" Version="1.0.0-preview1-10009" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.Twitter" Version="6.0.0-rc.*" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="6.0.0-rc.*" />
   </ItemGroup>
 </Project>
