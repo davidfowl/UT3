@@ -6,7 +6,7 @@ COPY /UTT/*.csproj ./
 RUN dotnet restore
 
 COPY /UTT .
-RUN dotnet publish -c Release -r linux-musl-x64 --self-contained -o out /p:PublishSingleFile=true
+RUN dotnet publish -c Release -r linux-musl-x64 --self-contained -o out /p:PublishSingleFile=true /p:PublishTrimmed=true
 
 FROM mcr.microsoft.com/dotnet/runtime-deps:6.0-alpine AS runtime
 ENV ASPNETCORE_URLS http://+:80
