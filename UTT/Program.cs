@@ -39,10 +39,7 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.UseEndpoints(endpoints =>
-{
-    endpoints.MapRazorPages();
-    endpoints.MapHub<UTTHub>("/utt");
-});
+app.MapRazorPages();
+app.MapHub<UTTHub>("/utt");
 
 app.Run();
